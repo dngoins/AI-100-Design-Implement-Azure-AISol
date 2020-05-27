@@ -1,0 +1,9 @@
+C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\ProcessingLibrary\bin\Debug\netcoreapp2.2\ProcessingLibrary.deps.json
+C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\ProcessingLibrary\bin\Debug\netcoreapp2.2\ProcessingLibrary.dll
+C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\ProcessingLibrary\bin\Debug\netcoreapp2.2\ProcessingLibrary.pdb
+C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\ProcessingLibrary\obj\Debug\netcoreapp2.2\ProcessingLibrary.csprojAssemblyReference.cache
+C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\ProcessingLibrary\obj\Debug\netcoreapp2.2\ProcessingLibrary.csproj.CoreCompileInputs.cache
+C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\ProcessingLibrary\obj\Debug\netcoreapp2.2\ProcessingLibrary.AssemblyInfoInputs.cache
+C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\ProcessingLibrary\obj\Debug\netcoreapp2.2\ProcessingLibrary.AssemblyInfo.cs
+C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\ProcessingLibrary\obj\Debug\netcoreapp2.2\ProcessingLibrary.dll
+C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\ProcessingLibrary\obj\Debug\netcoreapp2.2\ProcessingLibrary.pdb

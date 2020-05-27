@@ -1,0 +1,18 @@
+{
+    "name": "PictureBot",
+    "description": "",
+    "services": [
+        {
+            "type": "endpoint",
+            "appId": "fe57def2-e4ec-44fb-9619-9ba730ba255e",
+            "appPassword": "3GIh~Z_vtNAFUVYVk.0..B3C1V3Z8.28e6",
+            "endpoint": "http://localhost:3978/api/messages",
+            "id": "25ede4b0-9fc6-11ea-9011-fde8d313910d",
+            "name": "PictureBot@local"
+        }
+    ],
+    "padlock": "",
+    "version": "2.0",
+    "path": "C:\\Users\\dngoins\\source\\repos\\github\\dngoins\\AI-100-Design-Implement-Azure-AISol\\Lab3-Basic_Filter_Bot\\PictureBot.bot",
+    "overrides": null
+}
