@@ -1,0 +1,13 @@
+C:\Users\dngoins\Downloads\DetermineSentiment\obj\Debug\netcoreapp3.1\DetermineSentiment.csprojAssemblyReference.cache
+C:\Users\dngoins\Downloads\DetermineSentiment\obj\Debug\netcoreapp3.1\DetermineSentiment.csproj.CoreCompileInputs.cache
+C:\Users\dngoins\Downloads\DetermineSentiment\obj\Debug\netcoreapp3.1\DetermineSentiment.AssemblyInfoInputs.cache
+C:\Users\dngoins\Downloads\DetermineSentiment\obj\Debug\netcoreapp3.1\DetermineSentiment.AssemblyInfo.cs
+C:\Users\dngoins\Downloads\DetermineSentiment\bin\Debug\netcoreapp3.1\DetermineSentiment.exe
+C:\Users\dngoins\Downloads\DetermineSentiment\bin\Debug\netcoreapp3.1\DetermineSentiment.deps.json
+C:\Users\dngoins\Downloads\DetermineSentiment\bin\Debug\netcoreapp3.1\DetermineSentiment.runtimeconfig.json
+C:\Users\dngoins\Downloads\DetermineSentiment\bin\Debug\netcoreapp3.1\DetermineSentiment.runtimeconfig.dev.json
+C:\Users\dngoins\Downloads\DetermineSentiment\bin\Debug\netcoreapp3.1\DetermineSentiment.dll
+C:\Users\dngoins\Downloads\DetermineSentiment\bin\Debug\netcoreapp3.1\DetermineSentiment.pdb
+C:\Users\dngoins\Downloads\DetermineSentiment\obj\Debug\netcoreapp3.1\DetermineSentiment.dll
+C:\Users\dngoins\Downloads\DetermineSentiment\obj\Debug\netcoreapp3.1\DetermineSentiment.pdb
+C:\Users\dngoins\Downloads\DetermineSentiment\obj\Debug\netcoreapp3.1\DetermineSentiment.genruntimeconfig.cache
