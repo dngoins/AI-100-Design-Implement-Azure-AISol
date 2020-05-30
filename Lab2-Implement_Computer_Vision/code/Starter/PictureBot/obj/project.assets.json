@@ -74,6 +74,21 @@
           "lib/netstandard2.0/Microsoft.Azure.CognitiveServices.Language.LUIS.dll": {}
         }
       },
+      "Microsoft.Azure.CognitiveServices.Language.TextAnalytics/4.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Rest.ClientRuntime": "[2.3.20, 3.0.0)",
+          "Microsoft.Rest.ClientRuntime.Azure": "[3.3.18, 4.0.0)",
+          "Newtonsoft.Json": "10.0.3",
+          "System.Net.Http": "4.3.4"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Azure.CognitiveServices.Language.TextAnalytics.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Azure.CognitiveServices.Language.TextAnalytics.dll": {}
+        }
+      },
       "Microsoft.Azure.Cosmos/3.2.0": {
         "type": "package",
         "dependencies": {
@@ -2914,6 +2929,21 @@
         "lib/netstandard2.0/Microsoft.Azure.CognitiveServices.Language.LUIS.xml",
         "microsoft.azure.cognitiveservices.language.luis.runtime.2.1.0.nupkg.sha512",
         "microsoft.azure.cognitiveservices.language.luis.runtime.nuspec"
+      ]
+    },
+    "Microsoft.Azure.CognitiveServices.Language.TextAnalytics/4.0.0": {
+      "sha512": "dNux/MaIyznFkgq8hdNy+o30fSkkYJilKgRbLBkpeLvwkmHmKKpuad7ASNHBPiJQnLzzTzL0uQFauyVkzvhROw==",
+      "type": "package",
+      "path": "microsoft.azure.cognitiveservices.language.textanalytics/4.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net452/Microsoft.Azure.CognitiveServices.Language.TextAnalytics.dll",
+        "lib/net461/Microsoft.Azure.CognitiveServices.Language.TextAnalytics.dll",
+        "lib/netstandard1.4/Microsoft.Azure.CognitiveServices.Language.TextAnalytics.dll",
+        "lib/netstandard2.0/Microsoft.Azure.CognitiveServices.Language.TextAnalytics.dll",
+        "microsoft.azure.cognitiveservices.language.textanalytics.4.0.0.nupkg.sha512",
+        "microsoft.azure.cognitiveservices.language.textanalytics.nuspec"
       ]
     },
     "Microsoft.Azure.Cosmos/3.2.0": {
@@ -8894,6 +8924,7 @@
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
       "Microsoft.AspNetCore.Mvc.NewtonsoftJson >= 3.1.4",
+      "Microsoft.Azure.CognitiveServices.Language.TextAnalytics >= 4.0.0",
       "Microsoft.Azure.Search >= 10.1.0",
       "Microsoft.Bot.Builder.AI.Luis >= 4.9.1",
       "Microsoft.Bot.Builder.Azure >= 4.9.1",
@@ -8949,6 +8980,10 @@
           "Microsoft.AspNetCore.Mvc.NewtonsoftJson": {
             "target": "Package",
             "version": "[3.1.4, )"
+          },
+          "Microsoft.Azure.CognitiveServices.Language.TextAnalytics": {
+            "target": "Package",
+            "version": "[4.0.0, )"
           },
           "Microsoft.Azure.Search": {
             "target": "Package",

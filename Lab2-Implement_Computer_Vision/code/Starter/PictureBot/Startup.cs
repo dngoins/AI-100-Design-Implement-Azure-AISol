@@ -25,6 +25,11 @@ using Microsoft.Extensions.Hosting;
 
 using PictureBot.Bots;
 
+using Microsoft.Azure.CognitiveServices.Language.TextAnalytics;
+using Microsoft.Azure.CognitiveServices.Language.TextAnalytics.Models;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
+using System.Net;
+
 namespace PictureBot
 {
     public class Startup
@@ -147,7 +152,7 @@ namespace PictureBot
                 var luisEndPoint = Configuration.GetSection("luisEndPoint")?.Value;
 
                 // Get LUIS information
-                var luisApp = new LuisApplication(luisAppId, luisAppKey, luisEndPoint);
+                    var luisApp = new LuisApplication(luisAppId, luisAppKey, luisEndPoint);
 
                 // Specify LUIS options. These may vary for your bot.
                 var luisPredictionOptions = new LuisPredictionOptions
@@ -159,6 +164,21 @@ namespace PictureBot
                 var recognizer = new LuisRecognizer(luisApp, luisPredictionOptions, true, null);
                 return recognizer;
             });
+
+            services.AddSingleton(sp =>
+            {
+                string cogsBaseUrl = Configuration.GetSection("cogsBaseUrl")?.Value;
+                string cogsKey = Configuration.GetSection("cogsKey")?.Value;
+
+                var creds = new ApiKeyServiceClientCredentials(cogsKey);
+
+                TextAnalyticsClient client = new TextAnalyticsClient(creds)
+                {
+                    Endpoint = cogsBaseUrl
+                };
+                return client;
+
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -168,7 +188,6 @@ namespace PictureBot
 
             app.UseDefaultFiles()
                 .UseStaticFiles()
-                .UseBotFramework()
                 .UseWebSockets()
                 .UseRouting()
                 .UseAuthorization()

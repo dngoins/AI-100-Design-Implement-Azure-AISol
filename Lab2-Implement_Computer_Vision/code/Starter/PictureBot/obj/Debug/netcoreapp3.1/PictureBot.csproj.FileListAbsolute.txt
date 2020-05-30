@@ -83,11 +83,12 @@ C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol
 C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\PictureBot\bin\Debug\netcoreapp3.1\NuGet.Repositories.dll
 C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\PictureBot\bin\Debug\netcoreapp3.1\NuGet.RuntimeModel.dll
 C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\PictureBot\bin\Debug\netcoreapp3.1\NuGet.Versioning.dll
-C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\PictureBot\obj\Debug\netcoreapp3.1\PictureBot.csproj.CoreCompileInputs.cache
-C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\PictureBot\obj\Debug\netcoreapp3.1\PictureBot.MvcApplicationPartsAssemblyInfo.cs
-C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\PictureBot\obj\Debug\netcoreapp3.1\PictureBot.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\PictureBot\bin\Debug\netcoreapp3.1\Microsoft.Azure.Search.dll
 C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\PictureBot\bin\Debug\netcoreapp3.1\Microsoft.Azure.Search.Common.dll
 C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\PictureBot\bin\Debug\netcoreapp3.1\Microsoft.Azure.Search.Data.dll
 C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\PictureBot\bin\Debug\netcoreapp3.1\Microsoft.Azure.Search.Service.dll
 C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\PictureBot\bin\Debug\netcoreapp3.1\Microsoft.Spatial.dll
+C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\PictureBot\bin\Debug\netcoreapp3.1\Microsoft.Azure.CognitiveServices.Language.TextAnalytics.dll
+C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\PictureBot\obj\Debug\netcoreapp3.1\PictureBot.csproj.CoreCompileInputs.cache
+C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\PictureBot\obj\Debug\netcoreapp3.1\PictureBot.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\dngoins\source\repos\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Starter\PictureBot\obj\Debug\netcoreapp3.1\PictureBot.MvcApplicationPartsAssemblyInfo.cache

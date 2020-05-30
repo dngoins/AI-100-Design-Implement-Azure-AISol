@@ -25,6 +25,8 @@ using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Microsoft.PictureBot;
+using Microsoft.Azure.CognitiveServices.Language.TextAnalytics;
+using Microsoft.Azure.CognitiveServices.Language.TextAnalytics.Models;
 
 namespace PictureBot.Bots
 {
@@ -48,6 +50,7 @@ namespace PictureBot.Bots
 
         private readonly ILogger _logger;
         private DialogSet _dialogs;
+        private TextAnalyticsClient _textAnalyticsClient;
 
         /// <summary>
         /// Every conversation turn for our PictureBot will call this method.
@@ -71,6 +74,21 @@ namespace PictureBot.Bots
                 state.UtteranceList.Add(utterance);
                 await _accessors.ConversationState.SaveChangesAsync(turnContext);
 
+
+                //Check the language
+                var result = _textAnalyticsClient.DetectLanguage(turnContext.Activity.Text, "us");
+
+                switch (result.DetectedLanguages[0].Name)
+                {
+                    case "English":
+                        break;
+                    default:
+                        //throw error
+                        await turnContext.SendActivityAsync($"I'm sorry, I can only understand English. [{result.DetectedLanguages[0].Name}]");
+                        return;
+                       
+                }
+
                 // Establish dialog context from the conversation state.
                 var dc = await _dialogs.CreateContextAsync(turnContext);
                 // Continue any current dialog.
@@ -92,7 +110,7 @@ namespace PictureBot.Bots
         /// <param name="loggerFactory">A <see cref="ILoggerFactory"/> that is hooked to the Azure App Service provider.</param>
         /// <seealso cref="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-2.1#windows-eventlog-provider"/>
         /// 
-        public PictureBot(PictureBotAccessors accessors, ILoggerFactory loggerFactory , LuisRecognizer recognizer)
+        public PictureBot(PictureBotAccessors accessors, ILoggerFactory loggerFactory, LuisRecognizer recognizer, TextAnalyticsClient analyticsClient)
         {
             if (loggerFactory == null)
             {
@@ -105,6 +123,7 @@ namespace PictureBot.Bots
             _logger = loggerFactory.CreateLogger<PictureBot>();
             _logger.LogTrace("PictureBot turn start.");
             _accessors = accessors ?? throw new System.ArgumentNullException(nameof(accessors));
+            _textAnalyticsClient = analyticsClient;
 
             // The DialogSet needs a DialogState accessor, it will call it when it has a turn context.
             _dialogs = new DialogSet(_accessors.DialogStateAccessor);

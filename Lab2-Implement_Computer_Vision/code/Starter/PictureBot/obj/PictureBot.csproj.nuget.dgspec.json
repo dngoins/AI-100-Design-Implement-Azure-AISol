@@ -48,6 +48,10 @@
               "target": "Package",
               "version": "[3.1.4, )"
             },
+            "Microsoft.Azure.CognitiveServices.Language.TextAnalytics": {
+              "target": "Package",
+              "version": "[4.0.0, )"
+            },
             "Microsoft.Azure.Search": {
               "target": "Package",
               "version": "[10.1.0, )"

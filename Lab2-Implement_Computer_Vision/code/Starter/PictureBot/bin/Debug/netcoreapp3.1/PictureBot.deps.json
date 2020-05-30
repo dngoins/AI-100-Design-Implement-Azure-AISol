@@ -25,6 +25,7 @@
       "PictureBot/1.0.0": {
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.NewtonsoftJson": "3.1.4",
+          "Microsoft.Azure.CognitiveServices.Language.TextAnalytics": "4.0.0",
           "Microsoft.Azure.Search": "10.1.0",
           "Microsoft.Bot.Builder.AI.Luis": "4.9.1",
           "Microsoft.Bot.Builder.Azure": "4.9.1",
@@ -397,6 +398,23 @@
         },
         "compile": {
           "lib/netstandard2.0/Microsoft.Azure.CognitiveServices.Language.LUIS.dll": {}
+        }
+      },
+      "Microsoft.Azure.CognitiveServices.Language.TextAnalytics/4.0.0": {
+        "dependencies": {
+          "Microsoft.Rest.ClientRuntime": "2.3.21",
+          "Microsoft.Rest.ClientRuntime.Azure": "3.3.19",
+          "Newtonsoft.Json": "12.0.3",
+          "System.Net.Http": "4.3.4"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Azure.CognitiveServices.Language.TextAnalytics.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.0.19.37506"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Azure.CognitiveServices.Language.TextAnalytics.dll": {}
         }
       },
       "Microsoft.Azure.Cosmos/3.2.0": {
@@ -4032,6 +4050,13 @@
       "sha512": "sha512-8r62mdTtgrn2storrAKjX4c+GzweMuwIxINM9nPWKmFSRLNQQU3Ak1cneqAOEiONY3zkqJtF9ik6uuVbxDH9Qw==",
       "path": "microsoft.azure.cognitiveservices.language.luis.runtime/2.1.0",
       "hashPath": "microsoft.azure.cognitiveservices.language.luis.runtime.2.1.0.nupkg.sha512"
+    },
+    "Microsoft.Azure.CognitiveServices.Language.TextAnalytics/4.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-dNux/MaIyznFkgq8hdNy+o30fSkkYJilKgRbLBkpeLvwkmHmKKpuad7ASNHBPiJQnLzzTzL0uQFauyVkzvhROw==",
+      "path": "microsoft.azure.cognitiveservices.language.textanalytics/4.0.0",
+      "hashPath": "microsoft.azure.cognitiveservices.language.textanalytics.4.0.0.nupkg.sha512"
     },
     "Microsoft.Azure.Cosmos/3.2.0": {
       "type": "package",
