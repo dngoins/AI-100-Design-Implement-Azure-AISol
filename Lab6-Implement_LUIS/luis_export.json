@@ -16,7 +16,7 @@
       "name": "OrderPic"
     },
     {
-      "name": "SearchPics"
+      "name": "SearchPic"
     },
     {
       "name": "SharePic"
@@ -39,7 +39,7 @@
   "utterances": [
     {
       "text": "are there any pictures of",
-      "intent": "SearchPics",
+      "intent": "SearchPic",
       "entities": []
     },
     {
@@ -59,7 +59,7 @@
     },
     {
       "text": "find pictures",
-      "intent": "SearchPics",
+      "intent": "SearchPic",
       "entities": []
     },
     {
@@ -79,12 +79,12 @@
     },
     {
       "text": "locate a picture",
-      "intent": "SearchPics",
+      "intent": "SearchPic",
       "entities": []
     },
     {
       "text": "look for photos",
-      "intent": "SearchPics",
+      "intent": "SearchPic",
       "entities": []
     },
     {
@@ -94,7 +94,7 @@
     },
     {
       "text": "search pictures",
-      "intent": "SearchPics",
+      "intent": "SearchPic",
       "entities": []
     },
     {

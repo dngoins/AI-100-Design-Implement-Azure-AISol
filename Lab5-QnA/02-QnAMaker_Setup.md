@@ -14,23 +14,25 @@ In this lab we will explore the QnA Maker for creating bots that connect to a pr
 
 4. Select **Create**
 
-5. Type a name
+5. Ensure you lab subscription and resource groups are selected
 
-6. Select the **S0** tier for the resource pricing tier.  We aren't using the free tier because we will upload files that are larger than 1MB later.
+6. Provide a **Name** for the service, such as **ai100QnAgo** replacing **go** with your own initials to create a unique name
 
-7. Select your resource group
+7. Select the **Standard S0** tier for the resource pricing tier.  We aren't using the free tier because we will upload files that are larger than 1MB later.
 
-8. For the search pricing tier, select the **F** tier
+8. Select the same location all our resources have been placed in and then for the search pricing tier, select the **Free F** tier
 
-9. Enter an app name, it must be unique
+9. The **App name** field should populate with the same value you used for **Name** in the previous steps.  If not, enter an app name, it must be unique
 
-10. Select **Create**.  This will create the following resources in your resource group:
+10. Disable **App insights**
 
-- App Service Plan
-- App Service
-- Application Insights
-- Search Service
-- Cognitive Service instance of type QnAMaker
+11. Select **Review + Create** and then **Create**. This will create the following resources in your resource group:
+
+    - App Service Plan
+    - App Service
+    - Application Insights
+    - Search Service
+    - Cognitive Service instance of type QnAMaker
 
 ## Lab 5.2: Create a KnowledgeBase
 
@@ -50,13 +52,13 @@ In this lab we will explore the QnA Maker for creating bots that connect to a pr
 
 1. For the file, select **Add file**, browse to the **code/Manage Azure Blob Storage** file
 
-> **Note** You can find out more about the supported file types and data sources [here](https://docs.microsoft.com/en-us/azure/cognitive-services/qnamaker/concepts/data-sources-supported)
+    > **Note** You can find out more about the supported file types and data sources [here](https://docs.microsoft.com/en-us/azure/cognitive-services/qnamaker/concepts/data-sources-supported)
 
 1. For the **Chit-chat**, select **Witty**
 
 1. Select **Create your KB**
 
-> **NOTE** This can take a few minutes.
+    > **NOTE** This can take a few minutes.
 
 ## Lab 5.3: Publish and Test your Knowledge base
 
@@ -70,20 +72,20 @@ In this lab we will explore the QnA Maker for creating bots that connect to a pr
 
 1. On the bot service creation page, fix any naming errors, then select **Create**.
 
-> **Note**  Recent change in Azure requires dashes ("-") be removed from some resource names
+    > **Note**  Recent change in Azure requires dashes ("-") be removed from some resource names
 
 1. Once the bot resource is created, navigate to the new **Web App Bot**, then select **Test in Web Chat**
 
 1. Ask the bot any questions related to a Surface Pro 4 or managing Azure Blog Storage:
 
-- How do I add memory?
-- How long does it take to charge the battery?
-- How do I hard reset?
-- What is a blob?
+    - How do I add memory?
+    - How long does it take to charge the battery?
+    - How do I hard reset?
+    - What is a blob?
 
 1. Ask it some questions it doesn't know, such as:
 
-- How do I bowl a strike?
+    - How do I bowl a strike?
 
 ## Lab 5.4: Download the Bot Source code
 
@@ -103,7 +105,7 @@ In this lab we will explore the QnA Maker for creating bots that connect to a pr
 
 1. Open the **BotService.cs** file and review the code that was generated for this file.
 
-[!NOTE] The previous steps for reviewing the generated code are correct for the solution that was downloaded during the authoring of this lab.  The solution files may change from time to time based on updates to the frameworks and SDKs so the solution files may differ.  The key aspect here is just have you review the code that is automatically generated from the tool.
+    [!NOTE] The previous steps for reviewing the generated code are correct for the solution that was downloaded during the authoring of this lab.  The solution files may change from time to time based on updates to the frameworks and SDKs so the solution files may differ.  The key aspect here is just have you review the code that is automatically generated from the tool.
 
 ## Going Further
 

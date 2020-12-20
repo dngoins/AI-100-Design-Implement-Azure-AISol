@@ -87,178 +87,178 @@ We'll create a console application to help us understand how Direct Line can all
 
 1. Within the **Browse** tab , search and install/update the following:
 
-- Microsoft.Bot.Connector.DirectLine
-- Microsoft.Rest.ClientRuntime
+    - Microsoft.Bot.Connector.DirectLine
+    - Microsoft.Rest.ClientRuntime
 
 1. Open **Program.cs**
 
 1. Replace the contents of **Program.cs** (within PictureBotDL) with the following:
 
-```csharp
-using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Bot.Connector.DirectLine;
-using Newtonsoft.Json;
-using Activity = Microsoft.Bot.Connector.DirectLine.Activity;
+    ```csharp
+    using System;
+    using System.Diagnostics;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.Bot.Connector.DirectLine;
+    using Newtonsoft.Json;
+    using Activity = Microsoft.Bot.Connector.DirectLine.Activity;
 
-namespace PictureBotDL
-{
-    class Program
+    namespace PictureBotDL
     {
-        // ************
-        // Replace the following values with your Direct Line secret and the name of your bot resource ID.
-        //*************
-        private static string directLineSecret = "YourDLSecret";
-        private static string botId = "YourBotServiceName";
-
-        // This gives a name to the bot user.
-        private static string fromUser = "PictureBotSampleUser";
-
-        static void Main(string[] args)
+        class Program
         {
-            StartBotConversation().Wait();
-        }
+            // ************
+            // Replace the following values with your Direct Line secret and the name of your bot resource ID.
+            //*************
+            private static string directLineSecret = "YourDLSecret";
+            private static string botId = "YourBotServiceName";
 
+            // This gives a name to the bot user.
+            private static string fromUser = "PictureBotSampleUser";
 
-        /// <summary>
-        /// Drives the user's conversation with the bot.
-        /// </summary>
-        /// <returns></returns>
-        private static async Task StartBotConversation()
-        {
-            // Create a new Direct Line client.
-            DirectLineClient client = new DirectLineClient(directLineSecret);
-
-            // Start the conversation.
-            var conversation = await client.Conversations.StartConversationAsync();
-
-            // Start the bot message reader in a separate thread.
-            new System.Threading.Thread(async () => await ReadBotMessagesAsync(client, conversation.ConversationId)).Start();
-
-            // Prompt the user to start talking to the bot.
-            Console.Write("Conversation ID: " + conversation.ConversationId + Environment.NewLine);
-            Console.Write("Type your message (or \"exit\" to end): ");
-
-            // Loop until the user chooses to exit this loop.
-            while (true)
+            static void Main(string[] args)
             {
-                // Accept the input from the user.
-                string input = Console.ReadLine().Trim();
-
-                // Check to see if the user wants to exit.
-                if (input.ToLower() == "exit")
-                {
-                    // Exit the app if the user requests it.
-                    break;
-                }
-                else
-                {
-                    if (input.Length > 0)
-                    {
-                        // Create a message activity with the text the user entered.
-                        Activity userMessage = new Activity
-                        {
-                            From = new ChannelAccount(fromUser),
-                            Text = input,
-                            Type = ActivityTypes.Message
-                        };
-
-                        // Send the message activity to the bot.
-                        await client.Conversations.PostActivityAsync(conversation.ConversationId, userMessage);
-                    }
-                }
+                StartBotConversation().Wait();
             }
-        }
 
 
-        /// <summary>
-        /// Polls the bot continuously and retrieves messages sent by the bot to the client.
-        /// </summary>
-        /// <param name="client">The Direct Line client.</param>
-        /// <param name="conversationId">The conversation ID.</param>
-        /// <returns></returns>
-        private static async Task ReadBotMessagesAsync(DirectLineClient client, string conversationId)
-        {
-            string watermark = null;
-
-            // Poll the bot for replies once per second.
-            while (true)
+            /// <summary>
+            /// Drives the user's conversation with the bot.
+            /// </summary>
+            /// <returns></returns>
+            private static async Task StartBotConversation()
             {
-                // Retrieve the activity set from the bot.
-                var activitySet = await client.Conversations.GetActivitiesAsync(conversationId, watermark);
-                watermark = activitySet?.Watermark;
+                // Create a new Direct Line client.
+                DirectLineClient client = new DirectLineClient(directLineSecret);
 
-                // Extract the activies sent from our bot.
-                var activities = from x in activitySet.Activities
-                                 where x.From.Id == botId
-                                 select x;
+                // Start the conversation.
+                var conversation = await client.Conversations.StartConversationAsync();
 
-                // Analyze each activity in the activity set.
-                foreach (Activity activity in activities)
+                // Start the bot message reader in a separate thread.
+                new System.Threading.Thread(async () => await ReadBotMessagesAsync(client, conversation.ConversationId)).Start();
+
+                // Prompt the user to start talking to the bot.
+                Console.Write("Conversation ID: " + conversation.ConversationId + Environment.NewLine);
+                Console.Write("Type your message (or \"exit\" to end): ");
+
+                // Loop until the user chooses to exit this loop.
+                while (true)
                 {
-                    // Display the text of the activity.
-                    Console.WriteLine(activity.Text);
+                    // Accept the input from the user.
+                    string input = Console.ReadLine().Trim();
 
-                    // Are there any attachments?
-                    if (activity.Attachments != null)
+                    // Check to see if the user wants to exit.
+                    if (input.ToLower() == "exit")
                     {
-                        // Extract each attachment from the activity.
-                        foreach (Attachment attachment in activity.Attachments)
+                        // Exit the app if the user requests it.
+                        break;
+                    }
+                    else
+                    {
+                        if (input.Length > 0)
                         {
-                            switch (attachment.ContentType)
+                            // Create a message activity with the text the user entered.
+                            Activity userMessage = new Activity
                             {
-                                // Display a hero card.
-                                case "application/vnd.microsoft.card.hero":
-                                    RenderHeroCard(attachment);
-                                    break;
+                                From = new ChannelAccount(fromUser),
+                                Text = input,
+                                Type = ActivityTypes.Message
+                            };
 
-                                // Display the image in a browser.
-                                case "image/png":
-                                    Console.WriteLine($"Opening the requested image '{attachment.ContentUrl}'");
-                                    Process.Start(attachment.ContentUrl);
-                                    break;
-                            }
+                            // Send the message activity to the bot.
+                            await client.Conversations.PostActivityAsync(conversation.ConversationId, userMessage);
                         }
                     }
-
                 }
-
-                // Wait for one second before polling the bot again.
-                await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
             }
-        }
 
 
-        /// <summary>
-        /// Displays the hero card on the console.
-        /// </summary>
-        /// <param name="attachment">The attachment that contains the hero card.</param>
-        private static void RenderHeroCard(Attachment attachment)
-        {
-            const int Width = 70;
-            // Function to center a string between asterisks.
-            Func<string, string> contentLine = (content) => string.Format($"{{0, -{Width}}}", string.Format("{0," + ((Width + content.Length) / 2).ToString() + "}", content));
-
-            // Extract the hero card data.
-            var heroCard = JsonConvert.DeserializeObject<HeroCard>(attachment.Content.ToString());
-
-            // Display the hero card.
-            if (heroCard != null)
+            /// <summary>
+            /// Polls the bot continuously and retrieves messages sent by the bot to the client.
+            /// </summary>
+            /// <param name="client">The Direct Line client.</param>
+            /// <param name="conversationId">The conversation ID.</param>
+            /// <returns></returns>
+            private static async Task ReadBotMessagesAsync(DirectLineClient client, string conversationId)
             {
-                Console.WriteLine("/{0}", new string('*', Width + 1));
-                Console.WriteLine("*{0}*", contentLine(heroCard.Title));
-                Console.WriteLine("*{0}*", new string(' ', Width));
-                Console.WriteLine("*{0}*", contentLine(heroCard.Text));
-                Console.WriteLine("{0}/", new string('*', Width + 1));
+                string watermark = null;
+
+                // Poll the bot for replies once per second.
+                while (true)
+                {
+                    // Retrieve the activity set from the bot.
+                    var activitySet = await client.Conversations.GetActivitiesAsync(conversationId, watermark);
+                    watermark = activitySet?.Watermark;
+
+                    // Extract the activies sent from our bot.
+                    var activities = from x in activitySet.Activities
+                                    where x.From.Id == botId
+                                    select x;
+
+                    // Analyze each activity in the activity set.
+                    foreach (Activity activity in activities)
+                    {
+                        // Display the text of the activity.
+                        Console.WriteLine(activity.Text);
+
+                        // Are there any attachments?
+                        if (activity.Attachments != null)
+                        {
+                            // Extract each attachment from the activity.
+                            foreach (Attachment attachment in activity.Attachments)
+                            {
+                                switch (attachment.ContentType)
+                                {
+                                    // Display a hero card.
+                                    case "application/vnd.microsoft.card.hero":
+                                        RenderHeroCard(attachment);
+                                        break;
+
+                                    // Display the image in a browser.
+                                    case "image/png":
+                                        Console.WriteLine($"Opening the requested image '{attachment.ContentUrl}'");
+                                        Process.Start(attachment.ContentUrl);
+                                        break;
+                                }
+                            }
+                        }
+
+                    }
+
+                    // Wait for one second before polling the bot again.
+                    await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+                }
+            }
+
+
+            /// <summary>
+            /// Displays the hero card on the console.
+            /// </summary>
+            /// <param name="attachment">The attachment that contains the hero card.</param>
+            private static void RenderHeroCard(Attachment attachment)
+            {
+                const int Width = 70;
+                // Function to center a string between asterisks.
+                Func<string, string> contentLine = (content) => string.Format($"{{0, -{Width}}}", string.Format("{0," + ((Width + content.Length) / 2).ToString() + "}", content));
+
+                // Extract the hero card data.
+                var heroCard = JsonConvert.DeserializeObject<HeroCard>(attachment.Content.ToString());
+
+                // Display the hero card.
+                if (heroCard != null)
+                {
+                    Console.WriteLine("/{0}", new string('*', Width + 1));
+                    Console.WriteLine("*{0}*", contentLine(heroCard.Title));
+                    Console.WriteLine("*{0}*", new string(' ', Width));
+                    Console.WriteLine("*{0}*", contentLine(heroCard.Text));
+                    Console.WriteLine("{0}/", new string('*', Width + 1));
+                }
             }
         }
     }
-}
-```
+    ```
 
-> **Note** this code was slightly modified from [the documentation](https://docs.microsoft.com/en-us/azure/bot-service/bot-builder-howto-direct-line?view=azure-bot-service-4.0&tabs=cscreatebot%2Ccsclientapp%2Ccsrunclient#create-the-console-client-app) to include a few things we'll use in the next lab sections.
+    > **Note** this code was slightly modified from [the documentation](https://docs.microsoft.com/en-us/azure/bot-service/bot-builder-howto-direct-line?view=azure-bot-service-4.0&tabs=cscreatebot%2Ccsclientapp%2Ccsrunclient#create-the-console-client-app) to include a few things we'll use in the next lab sections.
 
 1. In **Program.cs**, update the direct line secret and bot id to your specific values.
 
@@ -272,9 +272,9 @@ Spend some time reviewing this sample code. It's a good exercise to make sure yo
 
 1. Have a conversation with the bot using the commandline application
 
-![Console App](../images//consoleapp.png)
+    ![Console App](../images//consoleapp.png)
 
-> **Note**  If you do not get a response, it is likely you have an error in your bot.  Test your bot locally using the Bot Emulator, fix any issues, then republish it.
+    > **Note**  If you do not get a response, it is likely you have an error in your bot.  Test your bot locally using the Bot Emulator, fix any issues, then republish it.
 
 Quick quiz - how are we displaying the Conversation ID? We'll see in the next sections why we might want this.
 
@@ -322,7 +322,7 @@ Postman makes this very easy for us to configure:
 
 1. Inspect the response returned.  You should find the image url displayed within the images array of the response
 
-![Images Array Example](../images//imagesarray.png)
+    ![Images Array Example](../images//imagesarray.png)
 
 ## Going further
 

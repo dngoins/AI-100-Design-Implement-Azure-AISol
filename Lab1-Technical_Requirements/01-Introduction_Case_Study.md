@@ -18,7 +18,7 @@ The Marketing department strongly believe that they can use the ratings data to 
 
  Adventure Works aims to seamlessly scale up to handle large inquiry volumes of customers speaking various languages. Additionally, they wish to create a scalable customer service platform to gain more insight about customers' needs, problems, and product ratings.
 
-In addition, the Customer Services department would like to offload some of their customer support function to an interactive platform. The intention is to reduce the workload on the staff and increase customer satisfaction by answer common questions quickly.
+In addition, the Customer Services department would like to offload some of their customer support function to an interactive platform. The intention is to reduce the workload on the staff and increase customer satisfaction by answering common questions quickly.
 
 ### Solution
 

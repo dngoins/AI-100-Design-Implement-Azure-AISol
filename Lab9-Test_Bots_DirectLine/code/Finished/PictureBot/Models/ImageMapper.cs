@@ -1,5 +1,4 @@
-﻿using Microsoft.Azure.Search.Models;
-
+﻿
 namespace PictureBot.Models
 {
     public class ImageMapper 

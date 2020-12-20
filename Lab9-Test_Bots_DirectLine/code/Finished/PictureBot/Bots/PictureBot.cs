@@ -7,21 +7,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Schema;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Logging;
-using System.Linq;
-using PictureBot.Models;
 using PictureBot.Responses;
 using Microsoft.Bot.Builder.AI.Luis;
-using Microsoft.Azure.Search;
-using Microsoft.Azure.Search.Models;
-using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Microsoft.PictureBot;
-using System.Collections.Generic;
-using Microsoft.Azure.CognitiveServices.Language.TextAnalytics;
+using Azure.AI.TextAnalytics;
 
 namespace PictureBot.Bots
 {
@@ -56,34 +47,33 @@ namespace PictureBot.Bots
                 await _accessors.ConversationState.SaveChangesAsync(turnContext);
 
                 //Check the language
-                var result = _textAnalyticsClient.DetectLanguage(turnContext.Activity.Text);
-                
-                switch (result.DetectedLanguages[0].Name)
+                DetectedLanguage detectedLanguage = _textAnalyticsClient.DetectLanguage(turnContext.Activity.Text);
+
+                switch (detectedLanguage.Name)
                 {
                     case "English":
+                        // Establish dialog context from the conversation state.
+                        var dc = await _dialogs.CreateContextAsync(turnContext);
+                        // Continue any current dialog.
+                        var results = await dc.ContinueDialogAsync(cancellationToken);
+
+                        // Every turn sends a response, so if no response was sent,
+                        // then there no dialog is currently active.
+                        if (!turnContext.Responded)
+                        {
+                            // Start the main dialog
+                            await dc.BeginDialogAsync("mainDialog", null, cancellationToken);
+                        }
                         break;
                     default:
                         //throw error
-                        await turnContext.SendActivityAsync($"I'm sorry, I can only understand English. [{result.DetectedLanguages[0].Name}]");
+                        await turnContext.SendActivityAsync($"I'm sorry, I can only understand English. [{detectedLanguage.Name}]");
                         break;
-                }
-                
-                // Establish dialog context from the conversation state.
-                var dc = await _dialogs.CreateContextAsync(turnContext);
-                // Continue any current dialog.
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-
-                // Every turn sends a response, so if no response was sent,
-                // then there no dialog is currently active.
-                if (!turnContext.Responded)
-                {
-                    // Start the main dialog
-                    await dc.BeginDialogAsync("mainDialog", null, cancellationToken);
                 }
             }
         }
 
-        public PictureBot(PictureBotAccessors accessors, ILoggerFactory loggerFactory,LuisRecognizer recognizer, TextAnalyticsClient analyticsClient)
+        public PictureBot(PictureBotAccessors accessors, ILoggerFactory loggerFactory, LuisRecognizer recognizer, TextAnalyticsClient analyticsClient)
         {
             if (loggerFactory == null)
             {
@@ -177,9 +167,6 @@ namespace PictureBot.Bots
             // Based on the recognized intent, direct the conversation
             switch (recognizedIntents.TopIntent?.Name)
             {
-                case "search":
-                    // switch to the search dialog
-                    return await stepContext.BeginDialogAsync("searchDialog", null, cancellationToken);
                 case "share":
                     // respond that you're sharing the photo
                     await MainResponses.ReplyWithShareConfirmation(stepContext.Context);
@@ -221,6 +208,10 @@ namespace PictureBot.Bots
                                 break;
                             case "SharePic":
                                 await MainResponses.ReplyWithShareConfirmation(stepContext.Context);
+                                await MainResponses.ReplyWithLuisScore(stepContext.Context, topIntent.Value.intent, topIntent.Value.score);
+                                break;
+                            case "SearchPic":
+                                await MainResponses.ReplyWithSearchConfirmation(stepContext.Context);
                                 await MainResponses.ReplyWithLuisScore(stepContext.Context, topIntent.Value.intent, topIntent.Value.score);
                                 break;
                             default:

@@ -17,20 +17,19 @@ using System.Text.RegularExpressions;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Integration;
-using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.PictureBot;
-using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
-using Microsoft.Azure.CognitiveServices.Language.TextAnalytics;
+using Microsoft.Bot.Builder.Azure.Blobs;
+using Azure.AI.TextAnalytics;
+using Azure;
 
 namespace PictureBot
 {
     public class Startup
     {
         private ILoggerFactory _loggerFactory;
-        private bool _isProduction = false;
 
         public Startup(IConfiguration configuration)
         {
@@ -42,36 +41,21 @@ namespace PictureBot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddControllers().AddNewtonsoftJson();
 
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
-            services.AddBot<PictureBot.Bots.PictureBot>(options =>
+            services.AddSingleton<IStorage, BlobsStorage>(sp =>
             {
-                var appId = Configuration.GetSection("MicrosoftAppId")?.Value;
-                var appSecret = Configuration.GetSection("MicrosoftAppPassword")?.Value;
-
-                options.CredentialProvider = new SimpleCredentialProvider(appId, appSecret);
-
-                // Creates a logger for the application to use.
-                ILogger logger = _loggerFactory.CreateLogger<PictureBot.Bots.PictureBot>();
-
-                // Catches any errors that occur during a conversation turn and logs them.
-                options.OnTurnError = async (context, exception) =>
-                {
-                    logger.LogError($"Exception caught : {exception}");
-                    await context.SendActivityAsync("Sorry, it looks like something went wrong.");
-                };
-
                 // The Memory Storage used here is for local bot debugging only. When the bot
                 // is restarted, everything stored in memory will be gone.
                 //IStorage dataStore = new MemoryStorage();
 
-                var blobConnectionString = Configuration.GetSection("BlobStorageConnectionString")?.Value;
-                var blobContainer = Configuration.GetSection("BlobStorageContainer")?.Value;
-                IStorage dataStore = new Microsoft.Bot.Builder.Azure.AzureBlobStorage(blobConnectionString, blobContainer);
-                services.AddSingleton<IStorage>(dataStore);
+                //var blobConnectionString = Configuration.GetSection("BlobStorageConnectionString")?.Value;
+                //var blobContainer = Configuration.GetSection("BlobStorageContainer")?.Value;
+                //IStorage dataStore = new BlobsStorage(blobConnectionString, blobContainer);
+                //services.AddSingleton<IStorage>(dataStore);
 
                 // For production bots use the Azure Blob or
                 // Azure CosmosDB storage providers. For the Azure
@@ -91,38 +75,65 @@ namespace PictureBot
                 // var storageContainer = string.IsNullOrWhiteSpace(blobStorageConfig.Container) ? DefaultBotContainer : blobStorageConfig.Container;
                 // IStorage dataStore = new Microsoft.Bot.Builder.Azure.AzureBlobStorage(blobStorageConfig.ConnectionString, storageContainer);
 
-                var userState = new UserState(dataStore);
-                var conversationState = new ConversationState(dataStore);
 
-                // Create the User state.
-                services.AddSingleton<UserState>(userState);
-
-                // Create the Conversation state.
-                services.AddSingleton<ConversationState>(conversationState);
-
-                var middleware = options.Middleware;
-
-                // Add Regex below
-                middleware.Add(new RegExpRecognizerMiddleware()
-                .AddIntent("search", new Regex("search picture(?:s)*(.*)|search pic(?:s)*(.*)", RegexOptions.IgnoreCase))
-                .AddIntent("share", new Regex("share picture(?:s)*(.*)|share pic(?:s)*(.*)", RegexOptions.IgnoreCase))
-                .AddIntent("order", new Regex("order picture(?:s)*(.*)|order print(?:s)*(.*)|order pic(?:s)*(.*)", RegexOptions.IgnoreCase))
-                .AddIntent("help", new Regex("help(.*)", RegexOptions.IgnoreCase)));
+                var blobConnectionString = Configuration.GetSection("BlobStorageConnectionString")?.Value;
+                var blobContainer = Configuration.GetSection("BlobStorageContainer")?.Value;
+                BlobsStorage dataStore = new BlobsStorage(blobConnectionString, blobContainer);
+                return dataStore;
             });
 
-            
+            // Create the User state.
+            services.AddSingleton<UserState>(sp => {
+                var dataStore = sp.GetRequiredService<IStorage>();
+                return new UserState(dataStore);
+            });
+
+            // Create the Conversation state.
+            services.AddSingleton<ConversationState>(sp =>
+            {
+                var dataStore = sp.GetRequiredService<IStorage>();
+                return new ConversationState(dataStore);
+            });
+
+            services.AddBot<PictureBot.Bots.PictureBot>(options =>
+            {
+                var appId = Configuration.GetSection("MicrosoftAppId")?.Value;
+                var appSecret = Configuration.GetSection("MicrosoftAppPassword")?.Value;
+
+                options.CredentialProvider = new SimpleCredentialProvider(appId, appSecret);
+
+                // Creates a logger for the application to use.
+                ILogger logger = _loggerFactory.CreateLogger<PictureBot.Bots.PictureBot>();
+
+                // Catches any errors that occur during a conversation turn and logs them.
+                options.OnTurnError = async (context, exception) =>
+                {
+                    logger.LogError($"Exception caught : {exception}");
+                    await context.SendActivityAsync("Sorry, it looks like something went wrong.");
+                };
+
+                options.Middleware.Add(new RegExpRecognizerMiddleware()
+                    .AddIntent("search", new Regex("search picture(?:s)*(.*)|search pic(?:s)*(.*)", RegexOptions.IgnoreCase))
+                    .AddIntent("share", new Regex("share picture(?:s)*(.*)|share pic(?:s)*(.*)", RegexOptions.IgnoreCase))
+                    .AddIntent("order", new Regex("order picture(?:s)*(.*)|order print(?:s)*(.*)|order pic(?:s)*(.*)", RegexOptions.IgnoreCase))
+                    .AddIntent("help", new Regex("help(.*)", RegexOptions.IgnoreCase)));
+
+            });
+
 
             // Create and register state accesssors.
             // Acessors created here are passed into the IBot-derived class on every turn.
             services.AddSingleton<PictureBotAccessors>(sp =>
-            {
+            { 
+
                 var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
                 if (options == null)
                 {
                     throw new InvalidOperationException("BotFrameworkOptions must be configured prior to setting up the state accessors");
                 }
 
-                var conversationState = services.BuildServiceProvider().GetService<ConversationState>();
+                var conversationState = sp.GetRequiredService<ConversationState>();
+                //var conversationState = services.BuildServiceProvider().GetService<ConversationState>();
 
                 if (conversationState == null)
                 {
@@ -131,60 +142,56 @@ namespace PictureBot
 
                 // Create the custom state accessor.
                 // State accessors enable other components to read and write individual properties of state.
-                var accessors = new PictureBotAccessors(conversationState)
+                return new PictureBotAccessors(conversationState)
                 {
                     PictureState = conversationState.CreateProperty<PictureState>(PictureBotAccessors.PictureStateName),
                     DialogStateAccessor = conversationState.CreateProperty<DialogState>("DialogState"),
                 };
-
-                return accessors;
             });
 
             // Create and register a LUIS recognizer.
             services.AddSingleton(sp =>
             {
-                var luisAppId = Configuration.GetSection("luisAppId")?.Value;
-                var luisAppKey = Configuration.GetSection("luisAppKey")?.Value;
-                var luisEndPoint = Configuration.GetSection("luisEndPoint")?.Value;
-
-                // Get LUIS information
-                var luisApp = new LuisApplication(luisAppId, luisAppKey, luisEndPoint);
-
-                // Specify LUIS options. These may vary for your bot.
-                var luisPredictionOptions = new LuisPredictionOptions
+                var luisApplication = new LuisApplication(
+                   Configuration.GetSection("luisAppId")?.Value,
+                   Configuration.GetSection("luisAppKey")?.Value,
+                   Configuration.GetSection("luisEndPoint")?.Value);
+                // Set the recognizer options depending on which endpoint version you want to use.
+                // More details can be found in https://docs.microsoft.com/en-gb/azure/cognitive-services/luis/luis-migration-api-v3
+                var recognizerOptions = new LuisRecognizerOptionsV3(luisApplication)
                 {
-                    IncludeAllIntents = true,
-                };
-
-                // Create the recognizer
-                var recognizer = new LuisRecognizer(luisApp, luisPredictionOptions, true, null);
-                return recognizer;
+                    PredictionOptions = new Microsoft.Bot.Builder.AI.LuisV3.LuisPredictionOptions
+                    {
+                        IncludeAllIntents = true,
+                    }
+                };            
+                return new LuisRecognizer(recognizerOptions);
             });
 
-            services.AddSingleton(sp =>
+            services.AddSingleton<TextAnalyticsClient>(sp =>
             {
-                string cogsBaseUrl = Configuration.GetSection("cogsBaseUrl")?.Value;
+                Uri cogsBaseUrl = new Uri(Configuration.GetSection("cogsBaseUrl")?.Value);
                 string cogsKey = Configuration.GetSection("cogsKey")?.Value;
 
-                var credentials = new ApiKeyServiceClientCredentials(cogsKey);
-                TextAnalyticsClient client = new TextAnalyticsClient(credentials)
-                {
-                    Endpoint = cogsBaseUrl
-                };
-
-                return client;
+                var credentials = new AzureKeyCredential(cogsKey);
+                return new TextAnalyticsClient(cogsBaseUrl, credentials);
             });
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
             _loggerFactory = loggerFactory;
 
             app.UseDefaultFiles()
+                .UseBotFramework()
                 .UseStaticFiles()
-                .UseBotFramework();
-
-            app.UseMvc();
+                .UseWebSockets()
+                .UseRouting()
+                .UseAuthorization()
+                .UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                });
         }
     }
 }

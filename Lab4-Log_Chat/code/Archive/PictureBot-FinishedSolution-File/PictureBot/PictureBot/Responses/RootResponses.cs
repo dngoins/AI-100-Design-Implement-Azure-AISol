@@ -36,5 +36,9 @@ namespace PictureBot.Responses
         {
             await context.SendActivity($"Ordering standard prints of your picture(s)...");
         }
+        public static async Task ReplyWithSearchConfirmation(ITurnContext context)
+        {
+            await context.SendActivityAsync($"Searching picture(s)...");
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿# PictureBot
+﻿# How To Run Finished PictureBot project
 
 Bot Framework v4 echo bot sample.
 
@@ -6,12 +6,35 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 
 ## Prerequisites
 
-- [.NET Core SDK](https://dotnet.microsoft.com/download) version 2.1
+- [.NET Core SDK](https://dotnet.microsoft.com/download) version 3.1
 
   ```bash
   # determine dotnet version
   dotnet --version
   ```
+  
+- File `settings.json` must be updated according the Lab instruction. Example of configuration:
+
+  ```JSON
+  {
+    "MicrosoftAppId": "1234567890",
+    "MicrosoftAppPassword": "abcdefg",
+    "BlobStorageConnectionString": "DefaultEndpointsProtocol=https;AccountName=youraccount;AccountKey=yourkey;EndpointSuffix=core.windows.net",
+    "BlobStorageContainer": "chatlog",
+    "luisAppId": "1234567890",
+    "luisAppKey": "1234567890",
+    "luisEndPoint": "https://eastus.api.cognitive.microsoft.com/",
+    "cogsBaseUrl": "https://eastus.api.cognitive.microsoft.com/",
+    "cogsKey": "1234567890"
+  }
+  ```
+- useful links
+
+    * [Create new or pick existed AppID](https://docs.microsoft.com/en-us/azure/bot-service/bot-service-resources-faq-azure?view=azure-bot-service-4.0)
+    * [Get connections string from storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-keys-manage?tabs=azure-portal#view-account-access-keys)
+    * [Get connection key for Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/create-sql-api-python#update-your-connection-string)
+    * [Get Key and endpoint URL for Cognitive Service](https://docs.microsoft.com/en-us/azure/search/search-create-service-portal#get-a-key-and-url-endpoint)
+    * [Get key for LUIS service](https://docs.microsoft.com/en-us/azure/cognitive-services/luis/luis-container-howto?tabs=v3#gathering-required-parameters)
 
 ## To try this sample
 
@@ -50,6 +73,7 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 - Launch Bot Framework Emulator
 - File -> Open Bot
 - Enter a Bot URL of `http://localhost:3978/api/messages`
+- Enter your AppID and Secret.
 
 ## Deploy the bot to Azure
 

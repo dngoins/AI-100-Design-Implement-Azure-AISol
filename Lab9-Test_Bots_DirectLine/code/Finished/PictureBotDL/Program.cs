@@ -12,8 +12,8 @@ namespace PictureBotDL
         // ************
         // Replace the following values with your Direct Line secret and the name of your bot resource ID.
         //*************
-        private static string directLineSecret = "YouDirectLineID";
-        private static string botId = "YourBotNAME";
+        private static string directLineSecret = "";
+        private static string botName = "";
 
         // This gives a name to the bot user.
         private static string fromUser = "PictureBotSampleUser";
@@ -94,7 +94,7 @@ namespace PictureBotDL
 
                 // Extract the activies sent from our bot.
                 var activities = from x in activitySet.Activities
-                                 where x.From.Id == botId
+                                 where x.From.Id == botName
                                  select x;
 
                 // Analyze each activity in the activity set.

@@ -1,4 +1,6 @@
-﻿namespace Microsoft.PictureBot
+﻿using System.Collections.Generic;
+
+namespace Microsoft.PictureBot
 {
     /// <summary>
     /// Stores counter state for the conversation.

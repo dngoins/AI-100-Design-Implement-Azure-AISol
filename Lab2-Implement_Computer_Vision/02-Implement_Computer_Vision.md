@@ -26,15 +26,15 @@ In the continuation of this lab throughout the course, we'll show you how to que
 
 ## Lab 2.2: Resources
 
-There are some directories in the [main](https://github.com/MicrosoftLearning/AI-100-Design-Implement-Azure-AISol/tree/master/Lab2-Implement_Computer_Vision) github repo folder:
+There are some directories in the [main](https://github.com/MicrosoftLearning/AI-100-Design-Implement-Azure-AISol/blob/master/Lab2-Implement_Computer_Vision/) github repo folder:
 
 - **sample_images**: Some sample images to use in testing your implementation of Cognitive Services.
 
 - **code**: In here, there are two directories. Each folder contains a solution (.sln) that has several different projects for the lab.
 
-  - **Starter**: A starter project, which you should use if you are going through the labs
+  - **Starter**: A starter project, which you can use if you want to learn about creating the code that is used in the project.
 
-  - **Finished**: A finished project if you get stuck or run out of time.
+  - **Finished**: A finished project that you will make use of to implement computer vision and work with the images in this lab.
 
 ## Lab 2.3: Image Processing
 
@@ -52,107 +52,109 @@ There are five main categories for the available Cognitive Services:
 
 You can browse all of the specific APIs in the [Services Directory](https://azure.microsoft.com/en-us/services/cognitive-services/directory/).
 
-Let's talk about how we're going to call Cognitive Services in our application.
+Let's talk about how we're going to call Cognitive Services in our application by reviewing the sample code in the Finished project.
 
 ### Image Processing Library
 
-1. Open the **code/Starter/ImageProcessing.sln** solution
+1. Open the **code/Finished/ImageProcessing.sln** solution
 
-Within your `ImageProcessing` solution you'll find the `ProcessingLibrary` project. It serves as a wrapper around several services. This specific PCL contains some helper classes (in the ServiceHelpers folder) for accessing the Computer Vision API and an "ImageInsights" class to encapsulate the results. Later, we'll create an image processor class that will be responsible for wrapping an image and exposing several methods and properties that act as a bridge to the Cognitive Services.
+1. Within your `ImageProcessing` solution you'll find the `ProcessingLibrary` project. It serves as a wrapper around several services. This specific PCL contains some helper classes (in the ServiceHelpers folder) for accessing the Computer Vision API and an "ImageInsights" class to encapsulate the results.
 
-![Processing Library PCL](../images/ProcessingLibrary.png)
+    ![Processing Library PCL](../images/ProcessingLibrary.png)
 
-After creating the image processor (in Lab 2.4), you should be able to pick up this portable class library and drop it in your other projects that involve Cognitive Services (some modification will be required depending on which Cognitive Services you want to use).
+1. You should be able to pick up this portable class library and drop it in your other projects that involve Cognitive Services (some modification will be required depending on which Cognitive Services you want to use).
 
 **ProcessingLibrary: Service Helpers**
 
-Service helpers can be used to make your life easier when you're developing your app. One of the key things that service helpers do is provide the ability to detect when the API calls return a call-rate-exceeded error and automatically retry the call (after some delay). They also help with bringing in methods, handling exceptions, and handling the keys.
+1. Service helpers can be used to make your life easier when you're developing your app. One of the key things that service helpers do is provide the ability to detect when the API calls return a call-rate-exceeded error and automatically retry the call (after some delay). They also help with bringing in methods, handling exceptions, and handling the keys.
 
-You can find additional service helpers for some of the other Cognitive Services within the [Intelligent Kiosk sample application](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/tree/master/Kiosk/ServiceHelpers). Utilizing these resources makes it easy to add and remove the service helpers in your future projects as needed.
+1. You can find additional service helpers for some of the other Cognitive Services within the [Intelligent Kiosk sample application](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/tree/master/Kiosk/ServiceHelpers). Utilizing these resources makes it easy to add and remove the service helpers in your future projects as needed.
 
 **ProcessingLibrary: The "ImageInsights" class**
 
 1. In the **ProcessingLibrary** project, navigate to the **ImageInsights.cs** file.
 
-You can see that there are properties for `Caption` and `Tags` from the images, as well as a unique `ImageId`. "ImageInsights" collects  the information from the Computer Vision API.
+1. You can see that there are properties for `Caption` and `Tags` from the images, as well as a unique `ImageId`. "ImageInsights" collects  the information from the Computer Vision API.
 
-Now let's take a step back for a minute. It isn't quite as simple as creating the "ImageInsights" class and copying over some methods/error handling from service helpers. We still have to call the API and process the images somewhere. For the purpose of this lab, we are going to walk through creating `ImageProcessor.cs`, but in future projects, feel free to add this class to your PCL and start from there (it will need modification depending what Cognitive Services you are calling and what you are processing - images, text, voice, etc.).
+1. Now let's take a step back for a minute. It isn't quite as simple as creating the "ImageInsights" class and copying over some methods/error handling from service helpers. We still have to call the API and process the images somewhere. For the purpose of this lab, we are going to walk through `ImageProcessor.cs`to understand how it is being used. In future projects, feel free to add this class to your PCL and start from there (it will need modification depending what Cognitive Services you are calling and what you are processing - images, text, voice, etc.).
 
-## Lab 2.4: Creating `ImageProcessor.cs`
+## Lab 2.4: Review ImageProcessor.cs
 
 1. Navigate to **ImageProcessor.cs** within `ProcessingLibrary`.
 
-1. Add the following [`using` directives](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-directive) **to the top** of the class, above the namespace:
+1. Note the following [`using` directives](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-directive) **to the top** of the class, above the namespace:
 
-```csharp
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.ProjectOxford.Vision;
-using ServiceHelpers;
-```
-1. You will likely be required to install the NuGet packages for Project Oxford so select the **Tools** menu.
-1. Then highlight **NuGet Package Manager** and select **Manage Nuget Packages for Solution**.
-1. In the **Search** box, enter **ProjectOxford**.
-1. Choose the packages that are listed and install them for the Project
-1. In **Solution Explorer**, expand **References** under the **ImageStorageLibrary** project and verify that yellow triangles are no longer present for the **ProjectOxford** packages.
+    ```csharp
+    using System;
+    using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.ProjectOxford.Vision;
+    using ServiceHelpers;
+    ```
 
-[Project Oxford](https://blogs.technet.microsoft.com/machinelearning/tag/project-oxford/) was the project where many Cognitive Services got their start. As you can see, the NuGet Packages were even labeled under Project Oxford. In this scenario, we'll call `Microsoft.ProjectOxford.Vision` for the Computer Vision API. Additionally, we'll reference our service helpers (remember, these will make our lives easier). You'll have to reference different packages depending on which Cognitive Services you're leveraging in your application.
+    [Project Oxford](https://blogs.technet.microsoft.com/machinelearning/tag/project-oxford/) was the project where many Cognitive Services got their start. As you can see, the NuGet Packages were even labeled under Project Oxford. In this scenario, we'll call `Microsoft.ProjectOxford.Vision` for the Computer Vision API. Additionally, we'll reference our service helpers (remember, these will make our lives easier). You'll have to reference different packages depending on which Cognitive Services you're leveraging in your application.
 
-1. In **ImageProcessor.cs** we will start by creating a method we will use to process the image, `ProcessImageAsync`. Paste the following code within the `ImageProcessor` class (between the `{ }`):
+1. In **ImageProcessor.cs** we start by utliziling a method to process the image, `ProcessImageAsync`. The code will utilize asynchronous processing because it will utilize services to perform the actions.
 
-```csharp
-public static async Task<ImageInsights> ProcessImageAsync(Func<Task<Stream>> imageStreamCallback, string imageId)
-{
-```
+    ```csharp
+    public static async Task<ImageInsights> ProcessImageAsync(string imgPath, string imageId)
+    {
+      // Set up an array that we'll fill in over the course of the processor:
+      VisualFeature[] DefaultVisualFeaturesList = new VisualFeature[] { VisualFeature.Tags, VisualFeature.Description };
 
-1. If Visual Studio does not add it for you automatically, add a curly brace to the end of the file to close the method
+      // Call the Computer Vision service and store the results in imageAnalysisResult:
+      var imageAnalysisResult = await VisionServiceHelper.AnalyzeImageAsync(imgPath, DefaultVisualFeaturesList);
 
-In the above code, we use `Func<Task<Stream>>` because we want to make sure we can process the image multiple times (once for each service that needs it), so we have a Func that can hand us back a way to get the stream. Since getting a stream is usually an async operation, rather than the Func handing back the stream itself, it hands back a task that allows us to do so in an async fashion.
+      // Create an entry in ImageInsights:
+      ImageInsights result = new ImageInsights
+      {
+        ImageId = imageId,
+        Caption = imageAnalysisResult.Description.Captions[0].Text,
+        Tags = imageAnalysisResult.Tags.Select(t => t.Name).ToArray()
+      };
 
-In `ImageProcessor.cs`, within the `ProcessImageAsync` method, we're going to set up a [static array](https://stackoverflow.com/questions/4594850/definition-of-static-arrays) that we'll fill in throughout the processor. As you can see, these are the main attributes we want to call for `ImageInsights.cs`.
+      // Return results:
+      return result;
+    }
+    ```
 
-1. Add the code below between the `{ }` of `ProcessImageAsync`:
+    In the above code, we use `Func<Task<Stream>>` because we want to make sure we can process the image multiple times (once for each service that needs it), so we have a Func that can hand us back a way to get the stream. Since getting a stream is usually an async operation, rather than the Func handing back the stream itself, it hands back a task that allows us to do so in an async fashion.
 
-```csharp
-VisualFeature[] DefaultVisualFeaturesList = new VisualFeature[] { VisualFeature.Tags, VisualFeature.Description };
-```
+    In `ImageProcessor.cs`, within the `ProcessImageAsync` method, we set up a [static array](https://stackoverflow.com/questions/4594850/definition-of-static-arrays) that we'll fill in throughout the processor. As you can see, these are the main attributes we want to call for `ImageInsights.cs`.
 
-Next, we want to call the Cognitive Service (specifically Computer Vision) and put the results in `imageAnalysisResult`.
+1. Next, we want to call the Cognitive Service (specifically Computer Vision) and put the results in `imageAnalysisResult`.
 
-1. Use the code below to call the Computer Vision API (with the help of `VisionServiceHelper.cs`) and store the results in `imageAnalysisResult`. Near the bottom of `VisionServiceHelper.cs`, you will want to review the available methods for you to call (`RunTaskWithAutoRetryOnQuotaLimitExceededError`, `DescribeAsync`, `AnalyzeImageAsync`, `RecognizeTextAsyncYou`). You will use the AnalyzeImageAsync method in order to return the visual features.
+1. We use the code below to call the Computer Vision API (with the help of `VisionServiceHelper.cs`) and store the results in `imageAnalysisResult`. Near the bottom of `VisionServiceHelper.cs`, you will want to review the available methods for you to call (`RunTaskWithAutoRetryOnQuotaLimitExceededError`, `DescribeAsync`, `AnalyzeImageAsync`, `RecognizeTextAsyncYou`). You will use the AnalyzeImageAsync method in order to return the visual features.
 
-```csharp
-var imageAnalysisResult = await VisionServiceHelper.AnalyzeImageAsync(imageStreamCallback, DefaultVisualFeaturesList);
-```
+    ```csharp
+    var imageAnalysisResult = await VisionServiceHelper.AnalyzeImageAsync(imgPath, DefaultVisualFeaturesList);
+    ```
 
-Now that we've called the Computer Vision service, we want to create an entry in "ImageInsights" with only the following results: ImageId, Caption, and Tags (you can confirm this by revisiting `ImageInsights.cs`).
+    Now that we've called the Computer Vision service, we want to create an entry in "ImageInsights" with only the following results: ImageId, Caption, and Tags (you can confirm this by revisiting `ImageInsights.cs`).
 
-1. Paste the following code below `var imageAnalysisResult` and  fill in the code for `ImageId`, `Caption`, and `Tags`:
+1. The following code below accomplishes this.
 
-```csharp
-ImageInsights result = new ImageInsights
-{
-    ImageId = imageId,
-    Caption = imageAnalysisResult.Description.Captions[0].Text,
-    Tags = imageAnalysisResult.Tags.Select(t => t.Name).ToArray()
-};
-```
+    ```csharp
+    ImageInsights result = new ImageInsights
+    {
+        ImageId = imageId,
+        Caption = imageAnalysisResult.Description.Captions[0].Text,
+        Tags = imageAnalysisResult.Tags.Select(t => t.Name).ToArray()
+    };
+    ```
 
-So now we have the caption and tags that we need from the Computer Vision API, and each image's result (with imageId) is stored in "ImageInsights".
+    So now we have the caption and tags that we need from the Computer Vision API, and each image's result (with imageId) is stored in "ImageInsights".
 
-1. Lastly, we need to close out the method by adding the following line to the end of the method:
+1. Lastly, we need to close out the method by using the following line at the end of the method:
 
-```csharp
-return result;
-```
+    ```csharp
+    return result;
+    ```
 
-1. Now that you've built `ImageProcessor.cs`, don't forget to save it!
+1. In order to use this application, we need to build the project, press **Ctrl-Shift-B**, of select the **Build** menu and choose **Build Solution**.
 
-1. Build the project, press **Ctrl-Shift-B**, fix any errors
-
-Want to make sure you set up `ImageProcessor.cs` correctly? You can find the full class [here](./code/Finished/ProcessingLibrary/ImageProcessor.cs).
+1. Work with your instructor to fix any errors.
 
 ### Exploring Cosmos DB	
 
@@ -161,45 +163,56 @@ Azure Cosmos DB is Microsoft's resilient NoSQL PaaS solution and is incredibly u
 ## Lab 2.5 (optional): Understanding CosmosDBHelper	
 
 Cosmos DB is not a focus of this lab, but if you're interested in what's going on - here are some highlights from the code we will be using:	
-1. Navigate to the `CosmosDBHelper.cs` class in the `ImageStorageLibrary` project. Review the code and the comments. Many of the implementations used can be found in the [Getting Started guide](https://docs.microsoft.com/en-us/azure/cosmos-db/documentdb-get-started).	
-1. Go to the `TestCLI` project's `Util.cs` file and review  the `ImageMetadata` class (code and comments). This is where we turn the `ImageInsights` we retrieve from Cognitive Services into appropriate Metadata to be stored into Cosmos DB.	
-- Finally, look in `Program.cs` in `TestCLI` and at  `ProcessDirectoryAsync`. First, we check if the image and metadata have already been uploaded - we can use `CosmosDBHelper` to find the document by ID and to return `null` if the document doesn't exist. Next, if we've set `forceUpdate` or the image hasn't been processed before, we'll call the Cognitive Services using `ImageProcessor` from the `ProcessingLibrary` and retrieve the `ImageInsights`, which we add to our current `ImageMetadata`.  	
-- Once all of that is complete, we can store our image - first the actual image into Blob Storage using our `BlobStorageHelper` instance, and then the `ImageMetadata` into Cosmos DB using our `CosmosDBHelper` instance. If the document already existed (based on our previous check), we should update the existing document. Otherwise, we should be creating a new one.	
 
-## Lab 2.6: Loading Images using TestCLI	
+1. Navigate to the `CosmosDBHelper.cs` class in the `ImageStorageLibrary` project. Review the code and the comments. Many of the implementations used can be found in the [Getting Started guide](https://docs.microsoft.com/en-us/azure/cosmos-db/documentdb-get-started).	
+
+1. Go to the `TestCLI` project's `Util.cs` file and review  the `ImageMetadata` class (code and comments). This is where we turn the `ImageInsights` we retrieve from Cognitive Services into appropriate Metadata to be stored into Cosmos DB.	
+
+    - Finally, look in `Program.cs` in `TestCLI` and at  `ProcessDirectoryAsync`. First, we check if the image and metadata have already been uploaded - we can use `CosmosDBHelper` to find the document by ID and to return `null` if the document doesn't exist. Next, if we've set `forceUpdate` or the image hasn't been processed before, we'll call the Cognitive Services using `ImageProcessor` from the `ProcessingLibrary` and retrieve the `ImageInsights`, which we add to our current `ImageMetadata`.  	
+
+    - Once all of that is complete, we can store our image - first the actual image into Blob Storage using our `BlobStorageHelper` instance, and then the `ImageMetadata` into Cosmos DB using our `CosmosDBHelper` instance. If the document already existed (based on our previous check), we should update the existing document. Otherwise, we should be creating a new one.	
+
+## Lab 2.6: Loading Images Using TestCLI	
 
 We will implement the main processing and storage code as a command-line/console application because this allows you to concentrate on the processing code without having to worry about event loops, forms, or any other UX related distractions. Feel free to add your own UX later.	
 1. In the **TestCLI** project, open the **settings.json** file	
 1. Add your specific environment settings from [Lab1-Technical_Requirements.md](../Lab1-Technical_Requirements/02-Technical_Requirements.md)	
 
-> **Note** the url for cognitive services should end with **/vision/v1.0** for the project oxford apis.  For example `https://westus2.api.cognitive.microsoft.com/vision/v1.0`.	
+    > **Note** the url for cognitive services should end with **/vision/v1.0** for the project oxford apis.  For example 'ENDPOINT/vision/v1.0`.
+    > ENDPOINT url can be found in your created Cognitive Services blade "RESOURCE MANAGEMENT" "Keys and EndPoint"
 
-1. If you have not already done so, compile the project	
-1. Open a command prompt and navigate to the build directory for the **TestCLI** project.  It should something like **{GitHubDir}\Lab2-Implement_Computer_Vision\code\Starter\TestCLI**.
+1. If you have not already done so, build the project	
+1. Open a command prompt and navigate to the build directory for the **TestCLI** project.  It should something like **{GitHubDir}\Lab2-Implement_Computer_Vision\code\Finished\TestCLI**.
 
-> **NOTE** Do not navigate to the debug directory	
+    > **NOTE** Do not navigate to the debug directory	
+    > **NOTE** .net core 3.1 is requred installation can be find here https://dotnet.microsoft.com/download/dotnet-core/3.1 
 
 1. Run command **dotnet run**	
-```cmd	
-Usage:  [options]	
-Options:	
--force            Use to force update even if file has already been added.	
--settings         The settings file (optional, will use embedded resource settings.json if not set)	
--process          The directory to process	
--query            The query to run	
--? | -h | --help  Show help information	
-```	
-By default, it will load your settings from `settings.json` (it builds it into the `.exe`), but you can provide your own using the `-settings` flag. To load images (and their metadata from Cognitive Services) into your cloud storage, you can just tell _TestCLI_ to `-process` your image directory as follows:	
-```cmd	
-dotnet run -- -process <%GitHubDir%>\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\sample_images	
-```	
-> **Note** Replace the <%GitHubDir%> value with the folder where you cloned the repository.	
-Once it's done processing, you can query against your Cosmos DB directly using _TestCLI_ as follows:	
-```cmd	
-dotnet run -- -query "select * from images"	
-```	
-Take some time to look through the sample images (you can find them in /sample_images) and compare the images to the results in your application.	
-> **Note** You can also browse the results in the CosmosDb resource in Azure.  Open the resource, then select **Data Explorer**.  Expand the **metadata** database, then select the **items** node.  You will see several json documents that contains your results.
+
+    ```cmd	
+    Usage:  [options]	
+    Options:	
+    -force            Use to force update even if file has already been added.	
+    -settings         The settings file (optional, will use embedded resource settings.json if not set)	
+    -process          The directory to process	
+    -query            The query to run	
+    -? | -h | --help  Show help information	
+    ```	
+
+1. By default, it will load your settings from `settings.json` (it builds it into the `.exe`), but you can provide your own using the `-settings` flag. To load images (and their metadata from Cognitive Services) into your cloud storage, you can just tell _TestCLI_ to `-process` your image directory as follows:	
+
+    ```cmd	
+    dotnet run -process "<%GitHubDir%>\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\sample_images"	
+    ```	
+    > **Note** Replace the <%GitHubDir%> value with the folder where you cloned the repository.	
+    Once it's done processing, you can query against your Cosmos DB directly using _TestCLI_ as follows:	
+    ```cmd	
+    dotnet run -query "select * from images"	
+    ```	
+
+1. Take some time to look through the sample images (you can find them in /sample_images) and compare the images to the results in your application.	
+
+    > **Note** You can also browse the results in the CosmosDb resource in Azure.  Open the resource, then select **Data Explorer**.  Expand the **metadata** database, then select the **items** node.  You will see several json documents that contains your results.
 
 
 ## Credits
