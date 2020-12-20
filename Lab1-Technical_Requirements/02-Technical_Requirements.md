@@ -1,6 +1,6 @@
 # Lab 1: Meeting the Technical Requirements
 
-## Lab 1.1: Setting technology, environments and keys
+## Setting technology, environments and keys
 
 This lab is meant for an Artificial Intelligence (AI) Engineer or an AI Developer on Azure. To ensure you have time to work through the exercises, there are certain requirements to meet before starting the labs for this course.
 
@@ -10,7 +10,7 @@ You should ideally have some previous exposure to Visual Studio. We will be usin
 
 > **Note** You can use different environments for completing this lab.  Your instructor will guide you through the necessary steps to get the environment up and running.   This could be as simple as using the computer you are logged into in the classroom or as complex as setting up a virtualized environment.  The labs were created and tested using the Azure Data Science Virtual Machine (DSVM) on Azure and as such, will require an Azure account to use.
 
-#### Setup your Azure Account
+### Setup your Azure Account
 
 You may activate an Azure free trial at [https://azure.microsoft.com/en-us/free/](https://azure.microsoft.com/en-us/free/).
 
@@ -18,7 +18,7 @@ If you have been given an Azure Pass to complete this lab, you may go to [http:/
 
 ### Environment Setup
 
-These labs are intended to be used with the .NET Framework using [Visual Studio 2019](https://www.visualstudio.com/downloads/).  The original workshop was designed to be used, and was tested with, the Azure Data Science Virtual Machine (DSVM).  Only premium Azure subscriptions can actually create a DSVM resource on Azure but the labs can be completed with a local computer running Visual Studio 2019 and the required software downloads listed throughout the lab steps.
+These labs are intended to be used with the .NET Framework using [Visual Studio 2019](https://www.visualstudio.com/downloads/) runnning on a Microsoft Windows operating system. While there is a version of Visual Studio for Mac OS, certain features in the sample code are not supported on the Mac OS platform.  As a result, there is a hosted lab option available using a virtual machine solution. Your instructor will have the details on using the VM solution.  The original workshop was designed to be used, and was tested with, the Azure Data Science Virtual Machine (DSVM).  Only premium Azure subscriptions can actually create a DSVM resource on Azure but the labs can be completed with a local computer running Visual Studio 2019 and the required software downloads listed throughout the lab steps.
 
 ### Urls and Keys Needed
 
@@ -39,21 +39,21 @@ Over the course of this lab, we will collect a variety of Cognitive Services key
 >- Cosmos DB Key:
 >- DirectLine Key:
 
-### Azure Setup
+## Azure Setup
 
 In the following steps, you will configure the Azure environment for the labs that follow.
 
-#### Cognitive Services
+### Cognitive Services
 
 While the first lab focuses on the [Computer Vision](https://www.microsoft.com/cognitive-services/en-us/computer-vision-api) Cognitive Service, Microsoft Azure allows you to create a cognitive service account that spans all services, or you can elect to create a cognitive service account for an individual service.  In the following steps, you will create a single Azure resource that contains all available cognitive services endpoints.
 
 1. Open the [Azure Portal](https://portal.azure.com)
 
-2. Select **+ Create a Resource** and then enter **cognitive services** in the search box
+1. Select **+ Create a Resource** and then enter **cognitive services** in the search box
 
-3. Choose **Cognitive Services** from the available options, then select **Create**
+1. Choose **Cognitive Services** from the available options, then select **Create**
 
-> **Note** Again to reiterate, you can create specific cognitive services resources or you can create a single resource that contains all the endpoints.
+    > **Note** Again to reiterate, you can create specific cognitive services resources or you can create a single resource that contains all the endpoints.
 
 1. Type a name of your own choosing
 
@@ -63,15 +63,21 @@ While the first lab focuses on the [Computer Vision](https://www.microsoft.com/c
 
 1. Check the confirmation checkbox
 
-1. Select **Create**
+    >[!Note]
+    >Microsoft updates the Azure portal and services on a regular basis.  These steps contained the appropriate items at the time of writing but options and dialogs may 
+    differ if changes are made to Azure.  Check with your instructor for any anomalies that you may encounter.
 
-1. Navigate to the new resource, select **Quick Start**
+1. Select **Review + create**
+
+1. Once validation passes, select **Create**
+
+1. Navigate to the new resource, under the **Resource Management** section in the left toolbar, select **Keys and Endpoints**
 
 1. Copy the **API Key** and the **url of the endpoint** to your notepad
 
     ![Quick start and the Key1 and Endpoint values are highlighted](../images/lab01-cogskeys.png 'The service key and endpoint values are highlighted')
 
-#### Azure Storage Account
+### Azure Storage Account
 
 1. In the Azure Portal, select **+ Create a Resource** and then enter **storage** in the search box
 
@@ -79,7 +85,7 @@ While the first lab focuses on the [Computer Vision](https://www.microsoft.com/c
 
 1. Select your subscription and resource group
 
-1. Type a unique name for your account
+1. Type a name for your account, using your initials to make it unbique. **ai100storagego**
 
 1. For the location, select the same as your resource group
 
@@ -93,7 +99,7 @@ While the first lab focuses on the [Computer Vision](https://www.microsoft.com/c
 
 1. Select **Review + create**
 
-1. Select**Create**
+1. Select **Create**
 
 1. Navigate to the new resource, select **Access Keys**
 
@@ -109,11 +115,11 @@ While the first lab focuses on the [Computer Vision](https://www.microsoft.com/c
 
 1. For the name, type **images**
 
-    ![The container button is highlighted and the container name is populated.  The OK button is also highlighted.](../images/lab01-storageaccountcontainercreate.png 'Create a container called images')
+    ![The container button is highlighted and the container name is populated.  The OK button is also highlighted.](../images/new-container.png 'Create a container called images')
 
-1. Select **OK**
+1. Select **Create**
 
-#### Cosmos DB
+### Cosmos DB
 
 1. Open the [Azure Portal](https://portal.azure.com)
 
@@ -125,11 +131,13 @@ While the first lab focuses on the [Computer Vision](https://www.microsoft.com/c
 
 1. Select your subscription and resource group
 
-1. Type a unique account name
+1. Type a unique account name such as **ai100cosmosdbgo**
 
 1. Select a location that matches your resource group
 
-    ![The cosmosdb creation details are populated.](../images/lab01-cosmoscreate.png 'Create a cosmosdb resource')
+    ![The cosmosdb creation details are populated.](../images/cosmosdb.png 'Create a cosmosdb resource')
+
+1. Configure the remaining options as depicted in the above image
 
 1. Select **Review + create**
 
@@ -143,7 +151,7 @@ While the first lab focuses on the [Computer Vision](https://www.microsoft.com/c
 
 We will use the Bot Builder template for C# to create bots in this course.
 
-#### Download the Bot Builder SDK
+### Download the Bot Builder SDK
 
 1. Open a browser window to [Bot Builder SDK v4 Template for C# here](https://marketplace.visualstudio.com/items?itemName=BotBuilder.botbuilderv4)
 
@@ -165,8 +173,8 @@ You can download the v4 Bot Framework Emulator for testing your bot locally. The
 
 1. Download the emulator by going to [this page](https://github.com/Microsoft/BotFramework-Emulator/releases) and downloading the most recent version of the emulator that has the tag "4.6.0" or higher (select the "*-windows-setup.exe" file, if you are using windows).
 
-> **Note** The emulator installs to
-`"C:\Users\_your-username\AppData\Local\Programs\@bfemulatormain\Bot Framework Emulator.exe"`, but you can gain access to it through the start menu by searching for **bot framework**.
+    > **Note** The emulator installs to
+    `"C:\Users\_your-username\AppData\Local\Programs\@bfemulatormain\Bot Framework Emulator.exe"`, but you can gain access to it through the start menu by searching for **bot framework**.
 
 ## Credits
 
