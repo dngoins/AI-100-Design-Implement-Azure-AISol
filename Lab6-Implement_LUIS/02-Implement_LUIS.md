@@ -247,14 +247,20 @@ If you wish to attempt to create a LUIS model including Azure Cognitive Search, 
 6. Add the following code:
 
 - Add using statements to Startup.cs file: 
-    **Azure.Search.Documents;**
-    **Azure.Search.Documents.Indexes;**
-    **System.Collections.Generic;**
+```csharp
+    Azure.Search.Documents;
+    Azure.Search.Documents.Indexes;
+    System.Collections.Generic;
+```
 
 - Modify the ConfugrationServices Function:
-- Underneath **services.AddSingleton<IStorage, BlobStorage>...
+- Underneath 
+```csharp
+  services.AddSingleton<IStorage, BlobStorage>...
+```
 - Add nother Singleton for the Azure Search Client middleware
 
+```csharp
      //create the azure search index clients
             services.AddSingleton(sp =>
             {
@@ -271,11 +277,12 @@ If you wish to attempt to create a LUIS model including Azure Cognitive Search, 
                 
                 return searches;
             });
+```
             
 - In the PictureBot.cs source file, add a private variable of **List<SearchClient>**
 - Locate the constructor of the PictureBot class, and add a parameter of type **List<SearchClient>**
 - In the constructor set the private variable equal to the input paramater from the constructor. Check for null and empty list values before setting the private variable.
-
+- Add logic
 
 
 
