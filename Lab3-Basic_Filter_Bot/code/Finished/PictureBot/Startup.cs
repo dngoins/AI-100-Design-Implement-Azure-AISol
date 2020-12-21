@@ -1,36 +1,37 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 //
-// Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.5.0
+// Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.10.3
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+using PictureBot.Bots;
 
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.Bot.Builder.AI.Luis;
-using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
+
+using Microsoft.Bot.Builder.AI.Luis;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.PictureBot;
 
-using PictureBot.Bots;
 
 namespace PictureBot
 {
     public class Startup
     {
         private ILoggerFactory _loggerFactory;
-        private bool _isProduction = false;
 
         public Startup(IConfiguration configuration)
         {
@@ -42,11 +43,12 @@ namespace PictureBot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddControllers().AddNewtonsoftJson();
 
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
+            // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddBot<PictureBot.Bots.PictureBot>(options =>
             {
                 var appId = Configuration.GetSection("MicrosoftAppId")?.Value;
@@ -88,32 +90,37 @@ namespace PictureBot
 
                 // Create Conversation State object.
                 // The Conversation State object is where we persist anything at the conversation-scope.
+                var userState = new UserState(dataStore);
                 var conversationState = new ConversationState(dataStore);
 
-                options.State.Add(conversationState);
+                // Create the User state.
+                services.AddSingleton<UserState>(userState);
+
+                // Create the Conversation state.
+                services.AddSingleton<ConversationState>(conversationState);
 
                 var middleware = options.Middleware;
-                // Add middleware below with "middleware.Add(...."
-                // Add Regex below
                 middleware.Add(new RegExpRecognizerMiddleware()
-.AddIntent("search", new Regex("search picture(?:s)*(.*)|search pic(?:s)*(.*)", RegexOptions.IgnoreCase))
-.AddIntent("share", new Regex("share picture(?:s)*(.*)|share pic(?:s)*(.*)", RegexOptions.IgnoreCase))
-.AddIntent("order", new Regex("order picture(?:s)*(.*)|order print(?:s)*(.*)|order pic(?:s)*(.*)", RegexOptions.IgnoreCase))
-.AddIntent("help", new Regex("help(.*)", RegexOptions.IgnoreCase)));
-
+                .AddIntent("search", new Regex("search picture(?:s)*(.*)|search pic(?:s)*(.*)", RegexOptions.IgnoreCase))
+                .AddIntent("share", new Regex("share picture(?:s)*(.*)|share pic(?:s)*(.*)", RegexOptions.IgnoreCase))
+                .AddIntent("order", new Regex("order picture(?:s)*(.*)|order print(?:s)*(.*)|order pic(?:s)*(.*)", RegexOptions.IgnoreCase))
+                .AddIntent("help", new Regex("help(.*)", RegexOptions.IgnoreCase)));
             });
 
             // Create and register state accesssors.
             // Acessors created here are passed into the IBot-derived class on every turn.
             services.AddSingleton<PictureBotAccessors>(sp =>
             {
+
                 var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
                 if (options == null)
                 {
                     throw new InvalidOperationException("BotFrameworkOptions must be configured prior to setting up the state accessors");
                 }
 
-                var conversationState = options.State.OfType<ConversationState>().FirstOrDefault();
+                var conversationState = sp.GetRequiredService<ConversationState>();
+                //var conversationState = services.BuildServiceProvider().GetService<ConversationState>();
+
                 if (conversationState == null)
                 {
                     throw new InvalidOperationException("ConversationState must be defined and added before adding conversation-scoped state accessors.");
@@ -121,26 +128,49 @@ namespace PictureBot
 
                 // Create the custom state accessor.
                 // State accessors enable other components to read and write individual properties of state.
-                var accessors = new PictureBotAccessors(conversationState)
+                return new PictureBotAccessors(conversationState)
                 {
                     PictureState = conversationState.CreateProperty<PictureState>(PictureBotAccessors.PictureStateName),
                     DialogStateAccessor = conversationState.CreateProperty<DialogState>("DialogState"),
                 };
+            });
 
-                return accessors;
+            // Create the User state.
+            services.AddSingleton<UserState>(sp =>
+            {
+                var dataStore = sp.GetRequiredService<IStorage>();
+                return new UserState(dataStore);
+            });
+
+            // Create the Conversation state.
+            services.AddSingleton<ConversationState>(sp =>
+            {
+                var dataStore = sp.GetRequiredService<IStorage>();
+                return new ConversationState(dataStore);
+            });
+
+            // Create the IStorage.
+            services.AddSingleton<IStorage, MemoryStorage>(sp =>
+            {
+                return new MemoryStorage();
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
             _loggerFactory = loggerFactory;
 
             app.UseDefaultFiles()
+                .UseBotFramework()
                 .UseStaticFiles()
-                .UseBotFramework();
-
-            app.UseMvc();
+                .UseWebSockets()
+                .UseRouting()
+                .UseAuthorization()
+                .UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                });
         }
     }
 }

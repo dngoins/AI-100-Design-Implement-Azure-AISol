@@ -1,12 +1,13 @@
-﻿// Below each "Step" there is code that should be entered
-// Corresponds to the Steps in the instructions for 2_ImageProcessor.md
-// Step 1: Add the using directives below:
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.ProjectOxford.Vision;
 using ServiceHelpers;
+
+// Below each "Step" there is code that should be entered
+// Corresponds to the Steps in the instructions for 2_ImageProcessor.md
+// Step 1: Add the using directives below:
 
 // Specify the namespace
 namespace ProcessingLibrary
@@ -34,7 +35,5 @@ namespace ProcessingLibrary
             // Step 6: Return results:
             return result;
         }
-
     }
-
 }

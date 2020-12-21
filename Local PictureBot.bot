@@ -1,0 +1,34 @@
+{
+    "name": "Local PictureBot",
+    "description": "",
+    "services": [
+        {
+            "type": "endpoint",
+            "appId": "b87a74c5-5fab-4eda-97e1-5e1b426f5253",
+            "appPassword": "rOM7U2;q||5%n!tZj)+Wb8X^",
+            "endpoint": "http://localhost:3973/api/messages",
+            "id": "0bbf50f0-430f-11eb-943d-599f8439ac4f",
+            "name": "http://localhost:3973/api/messages"
+        },
+        {
+            "type": "endpoint",
+            "appId": "b87a74c5-5fab-4eda-97e1-5e1b426f5253",
+            "appPassword": "rOM7U2;q||5%n!tZj)+Wb8X^",
+            "endpoint": "http://localhost:3974/api/messages",
+            "id": "70",
+            "name": "Picture Bot 4"
+        },
+        {
+            "type": "endpoint",
+            "appId": "b87a74c5-5fab-4eda-97e1-5e1b426f5253",
+            "appPassword": "rOM7U2;q||5%n!tZj)+Wb8X^",
+            "endpoint": "http://localhost:3976/api/messages",
+            "name": "Picture Bot 6",
+            "id": "144"
+        }
+    ],
+    "padlock": "",
+    "version": "2.0",
+    "path": "C:\\Users\\jmfqynl\\source\\github\\dngoins\\AI-100-Design-Implement-Azure-AISol\\Local PictureBot.bot",
+    "overrides": null
+}

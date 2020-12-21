@@ -40,9 +40,28 @@ namespace ServiceHelpers
             }
         }
 
+        private static string url;
+        public static string Url
+        {
+            get
+            {
+                return url;
+            }
+
+            set
+            {
+                var changed = url != value;
+                url = value;
+                if (changed)
+                {
+                    InitializeVisionService();
+                }
+            }
+        }
+
         private static void InitializeVisionService()
         {
-            visionClient = new VisionServiceClient(apiKey);
+            visionClient = new VisionServiceClient(apiKey, url);
         }
 
         // handle throttling issues
@@ -81,7 +100,7 @@ namespace ServiceHelpers
         // Pull in the methods to call
         private static async Task RunTaskWithAutoRetryOnQuotaLimitExceededError(Func<Task> action)
         {
-            await RunTaskWithAutoRetryOnQuotaLimitExceededError<object>(async () => { await action(); return null; } );
+            await RunTaskWithAutoRetryOnQuotaLimitExceededError<object>(async () => { await action(); return null; });
         }
 
         public static async Task<AnalysisResult> DescribeAsync(Func<Task<Stream>> imageStreamCallback)
@@ -96,7 +115,7 @@ namespace ServiceHelpers
 
         public static async Task<AnalysisResult> AnalyzeImageAsync(Func<Task<Stream>> imageStreamCallback, IEnumerable<VisualFeature> visualFeatures = null, IEnumerable<string> details = null)
         {
-            return await RunTaskWithAutoRetryOnQuotaLimitExceededError<AnalysisResult>(async () => await visionClient.AnalyzeImageAsync(await imageStreamCallback(), visualFeatures, details ));
+            return await RunTaskWithAutoRetryOnQuotaLimitExceededError<AnalysisResult>(async () => await visionClient.AnalyzeImageAsync(await imageStreamCallback(), visualFeatures, details));
         }
 
         public static async Task<AnalysisResult> DescribeAsync(string imageUrl)

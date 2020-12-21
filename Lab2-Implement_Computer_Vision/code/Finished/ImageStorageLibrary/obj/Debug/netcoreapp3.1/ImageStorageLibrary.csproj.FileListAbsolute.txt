@@ -1,0 +1,11 @@
+C:\Users\jmfqynl\source\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Finished\ImageStorageLibrary\bin\Debug\netcoreapp3.1\Microsoft.Azure.Cosmos.ServiceInterop.dll
+C:\Users\jmfqynl\source\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Finished\ImageStorageLibrary\bin\Debug\netcoreapp3.1\Cosmos.CRTCompat.dll
+C:\Users\jmfqynl\source\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Finished\ImageStorageLibrary\bin\Debug\netcoreapp3.1\ImageStorageLibrary.deps.json
+C:\Users\jmfqynl\source\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Finished\ImageStorageLibrary\bin\Debug\netcoreapp3.1\ImageStorageLibrary.dll
+C:\Users\jmfqynl\source\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Finished\ImageStorageLibrary\bin\Debug\netcoreapp3.1\ImageStorageLibrary.pdb
+C:\Users\jmfqynl\source\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Finished\ImageStorageLibrary\obj\Debug\netcoreapp3.1\ImageStorageLibrary.csprojAssemblyReference.cache
+C:\Users\jmfqynl\source\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Finished\ImageStorageLibrary\obj\Debug\netcoreapp3.1\ImageStorageLibrary.AssemblyInfoInputs.cache
+C:\Users\jmfqynl\source\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Finished\ImageStorageLibrary\obj\Debug\netcoreapp3.1\ImageStorageLibrary.AssemblyInfo.cs
+C:\Users\jmfqynl\source\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Finished\ImageStorageLibrary\obj\Debug\netcoreapp3.1\ImageStorageLibrary.csproj.CoreCompileInputs.cache
+C:\Users\jmfqynl\source\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Finished\ImageStorageLibrary\obj\Debug\netcoreapp3.1\ImageStorageLibrary.dll
+C:\Users\jmfqynl\source\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab2-Implement_Computer_Vision\code\Finished\ImageStorageLibrary\obj\Debug\netcoreapp3.1\ImageStorageLibrary.pdb

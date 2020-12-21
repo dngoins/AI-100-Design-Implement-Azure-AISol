@@ -13,8 +13,6 @@ using System.Linq;
 using PictureBot.Models;
 using PictureBot.Responses;
 using Microsoft.Bot.Builder.AI.Luis;
-using Microsoft.Azure.Search;
-using Microsoft.Azure.Search.Models;
 using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

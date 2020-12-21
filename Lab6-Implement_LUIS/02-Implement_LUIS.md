@@ -209,6 +209,77 @@ If you still have time, spend time exploring the www.luis.ai site. Select "Prebu
 
 If you wish to attempt to create a LUIS model including Azure Cognitive Search, follow the training on [LUIS models including search](https://github.com/Azure/LearnAI-Bootcamp/tree/master/lab01.5-luis).
 
+## (Optional Adding Azure Cognitve Search)
+
+1. Navigate to Azure Portal and add a new Azure Cognitive Search resource to your current Resource Group. 
+- URL: picturebotsearch
+- location:
+- Pricing Tier: Standard
+- Click Review + create
+
+2. Once the Picture bot search service is provisioned, we'll need to create connections to the data sources we want to crawl. We will assume a Blob Storage and a Comsbos DB container has already been created.
+- Click on **Import data** 
+- Select **Existing data Source** 
+- Choose Azure Blob Storage
+- Data Source Name: images
+- Choose existing connection to the existing Blob storage account
+- Container name: images
+- Click Next -> Skip to: Target Index
+- Click Next: Create an indexer
+- Schedule: Hourly
+- Click Submit
+- Repeat the previous steps to add an index to the CosmosDB images container as well.
+- Make note of the index names: **azureblob-index** and **cosmosdb-index** by default
+
+3. Use Search Explorer to search for your entries in Blob and CosmosDB indexes.
+- Click on Search Explorer
+- Select one of the indexes created (Would of be named **azureblob-index** by default)
+- In the query string type **\*** press search
+- Notice the results that return. We can use these results in the Picture Bot to search for pictures.
+
+4. Navigate back to the **picturebotsearch** overview page, and click on **Keys**. Create a query key by clicking **Add** and adding the name **queryKey**. Copy done the value to utilize inside the Picture Bot.
+
+5. Open the Picture Bot Solution.
+- add a searchServiceEndPoint entry and set it's corresponding value to **https://picturebotsearch.search.windows.net** in the appsettings.json file
+- add a queryKey entry and it's corresponding value in the appsettings.json file
+- add a searchIndexNames entry and it's corresponding value: searchIndexNames: "**azureblob-index**, **cosmosdb-index**"
+
+6. Add the following code:
+
+- Add using statements to Startup.cs file: 
+    **Azure.Search.Documents;**
+    **Azure.Search.Documents.Indexes;**
+    **System.Collections.Generic;**
+
+- Modify the ConfugrationServices Function:
+- Underneath **services.AddSingleton<IStorage, BlobStorage>...
+- Add nother Singleton for the Azure Search Client middleware
+
+     //create the azure search index clients
+            services.AddSingleton(sp =>
+            {
+                var searchServiceEndPoint = Configuration.GetSection("searchServiceEndPoint")?.Value;
+                var queryApiKey = Configuration.GetSection("queryKey")?.Value;
+                var indexNames = Configuration.GetSection("searchIndexNames")?.Value.Split(',');
+
+                List<SearchClient> searches = new List<SearchClient>();
+                foreach (var indexName in indexNames)
+                {
+                    SearchClient searchClient = new SearchClient(new Uri(searchServiceEndPoint), indexName, new AzureKeyCredential(queryApiKey));
+                    searches.Add(searchClient);
+                }
+                
+                return searches;
+            });
+            
+- In the PictureBot.cs source file, add a private variable of **List<SearchClient>**
+- Locate the constructor of the PictureBot class, and add a parameter of type **List<SearchClient>**
+- In the constructor set the private variable equal to the input paramater from the constructor. Check for null and empty list values before setting the private variable.
+
+
+
+
+
 ## Next Steps
 
 - [Lab 07-01: Integrate LUIS](../Lab7-Integrate_LUIS/01-Introduction.md)

@@ -182,10 +182,15 @@ namespace PictureBot
             _loggerFactory = loggerFactory;
 
             app.UseDefaultFiles()
+                .UseBotFramework()
                 .UseStaticFiles()
-                .UseBotFramework();
-
-            app.UseMvc();
+                .UseWebSockets()
+                .UseRouting()
+                .UseAuthorization()
+                .UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                });
         }
     }
 }
