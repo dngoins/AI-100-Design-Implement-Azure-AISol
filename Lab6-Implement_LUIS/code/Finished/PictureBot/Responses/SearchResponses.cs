@@ -28,10 +28,17 @@ namespace PictureBot.Responses
             StringBuilder sb = new StringBuilder();
             foreach(var res in results)
             {
-                sb.Append(string.Format("Item: {0}\nDescription: {1}\nUrl: {2}\n\n", res.Title, res.Description, res.PictureUrl));
+                if (string.IsNullOrEmpty(res.Caption))
+                {
+                    sb.Append(res.merged_content);
+                }
+                else
+                {
+                    sb.Append(string.Format("\nItem: {0}\nDescription: {1}\nUrl: {2}\n\n", res.Content, res.Caption, res.BlobUri));
+                }
             }
 
-            await context.SendActivityAsync(string.Format("We found {0} results found for \"" + utterance + "\".\n{1}", results.Count.ToString(), sb.ToString()));
+            await context.SendActivityAsync(string.Format("We found {0} results found for \"" + utterance + "\".\n\n{1}", results.Count.ToString(), sb.ToString()));
         }
 
         public static async Task ReplyWithGreeting(ITurnContext context)

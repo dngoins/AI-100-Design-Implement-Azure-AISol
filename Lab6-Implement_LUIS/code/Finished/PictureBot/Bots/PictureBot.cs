@@ -113,6 +113,7 @@ namespace PictureBot.Bots
             var search_waterfallsteps = new WaterfallStep[]
             {
                 // Add SearchDialog water fall steps
+                AskForSearchTermAsync,
                 SearchAsync
             };
 
@@ -138,10 +139,10 @@ namespace PictureBot.Bots
                 SearchResults<SearchHit> _results;
 
                 options = new SearchOptions();
-                options.Select.Add(searchClient.IndexName);
+               // options.Select.Add(searchClient.IndexName);
 
                 _results = searchClient.Search<SearchHit>(searchText, options);
-
+               
                 foreach (var _res in _results.GetResults())
                 {
                     results.Add(_res.Document );
@@ -231,6 +232,30 @@ namespace PictureBot.Bots
             }
         }
 
+        // Greet the user
+        // Update the GreetedState to greeted
+
+        private async Task<DialogTurnResult> AskForSearchTermAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            // Get the state for the current step in the conversation
+            var state = await _accessors.PictureState.GetAsync(stepContext.Context, () => new PictureState());
+
+            // Save the new greeted state into the conversation state
+            // This is to ensure in future turns we do not greet the user again
+            // Ask the user what they want to do next
+            state.Searching = true;
+            await _accessors.ConversationState.SaveChangesAsync(stepContext.Context);
+            
+            
+           // await SearchResponses.ReplyWithGreeting(stepContext.Context);
+            
+           return await stepContext.PromptAsync("searchPrompt", new PromptOptions { Prompt = MessageFactory.Text("Ok, What would you like to search for?") }, cancellationToken);
+
+            // Move to the next waterfall step, which is MainMenuAsync
+          //  return await stepContext.NextAsync();
+
+        }
+
         // If we haven't greeted a user yet, we want to do that first, but for the rest of the
         // conversation we want to remember that we've already greeted them.
         private async Task<DialogTurnResult> SearchAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -238,18 +263,9 @@ namespace PictureBot.Bots
             // Get the state for the current step in the conversation
             var state = await _accessors.PictureState.GetAsync(stepContext.Context, () => new PictureState());
 
-            // If we haven't greeted the user
-            if (state.Greeted != "not greeted")
+            // If we haven't asked the user for the search term ask now
+            if (state.Searching)
             {
-                // Greet the user
-                await SearchResponses.ReplyWithGreeting(stepContext.Context);
-                // Update the GreetedState to greeted
-                state.Greeted = "greeted";
-                // Save the new greeted state into the conversation state
-                // This is to ensure in future turns we do not greet the user again
-                // Ask the user what they want to do next
-                await _accessors.ConversationState.SaveChangesAsync(stepContext.Context);
-
                 var searchText = stepContext.Context.Activity.Text;
                 await SearchResponses.ReplyWithSearchConfirmation(stepContext.Context, searchText);
 
@@ -263,54 +279,21 @@ namespace PictureBot.Bots
                 {
                     await SearchResponses.ReplyWithResults(stepContext.Context, searchText, results);
                 }
-                // Since we aren't explicitly prompting the user in this step, we'll end the dialog
-                // When the user replies, since state is maintained, the else clause will move them
-                // to the next waterfall step
-                return await stepContext.EndDialogAsync();
+
+                 state.Searching = false;
+                await _accessors.ConversationState.SaveChangesAsync(stepContext.Context);
+
+
+
             }
-            else // We've already greeted the user
-            {
-                // Move to the next waterfall step, which is MainMenuAsync
-                return await stepContext.NextAsync();
-            }
+            // Since we aren't explicitly prompting the user in this step, we'll end the dialog
+            // When the user replies, since state is maintained, the else clause will move them
+            // to the next waterfall step
+            return await stepContext.EndDialogAsync();
 
         }
 
-        // This step routes the user to different dialogs
-        // In this case, there's only one other dialog, so it is more simple,
-        // but in more complex scenarios you can go off to other dialogs in a similar
-        public async Task<DialogTurnResult> SearchMenuAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            // Check if we are currently processing a user's search
-            var state = await _accessors.PictureState.GetAsync(stepContext.Context);
-
-            // If Regex picks up on anything, store it
-            var recognizedIntents = stepContext.Context.TurnState.Get<IRecognizedIntents>();
-            // Based on the recognized intent, direct the conversation
-            switch (recognizedIntents.TopIntent?.Name)
-            {
-                case "search":
-                    // switch to the search dialog
-                    return await stepContext.BeginDialogAsync("searchDialog", null, cancellationToken);
-                case "share":
-                    // respond that you're sharing the photo
-                    await MainResponses.ReplyWithShareConfirmation(stepContext.Context);
-                    return await stepContext.EndDialogAsync();
-                case "order":
-                    // respond that you're ordering
-                    await MainResponses.ReplyWithOrderConfirmation(stepContext.Context);
-                    return await stepContext.EndDialogAsync();
-                case "help":
-                    // show help
-                    await MainResponses.ReplyWithHelp(stepContext.Context);
-                    return await stepContext.EndDialogAsync();
-                default:
-                    {
-                        await MainResponses.ReplyWithConfused(stepContext.Context);
-                        return await stepContext.EndDialogAsync();
-                    }
-            }
-        }
+       
 
     }
 }
