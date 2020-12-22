@@ -1,34 +1,86 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 //
-// Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.10.3
+// Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.5.0
 
-using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.AI.Luis;
-using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
-using Microsoft.PictureBot;
+using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Extensions.Logging;
+using System.Linq;
+using PictureBot.Models;
 using PictureBot.Responses;
+using Microsoft.Bot.Builder.AI.Luis;
+using Microsoft.Azure.Search;
+using Microsoft.Azure.Search.Models;
+using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Microsoft.PictureBot;
+using System.Collections.Generic;
 
 namespace PictureBot.Bots
 {
     public class PictureBot : ActivityHandler
     {
         private readonly PictureBotAccessors _accessors;
+        // Initialize LUIS Recognizer
         private LuisRecognizer _recognizer { get; } = null;
+
+        private readonly ILogger _logger;
         private DialogSet _dialogs;
-        // A list of things that users have said to the bot
-        public List<string> UtteranceList { get; private set; } = new List<string>();
 
-
-        public PictureBot(PictureBotAccessors accessors, LuisRecognizer recognizer)
+        /// <summary>
+        /// Every conversation turn for our PictureBot will call this method.
+        /// There are no dialogs used, since it's "single turn" processing, meaning a single
+        /// request and response. Later, when we add Dialogs, we'll have to navigate through this method.
+        /// </summary>
+        /// <param name="turnContext">A <see cref="ITurnContext"/> containing all the data needed
+        /// for processing this conversation turn. </param>
+        /// <param name="cancellationToken">(Optional) A <see cref="CancellationToken"/> that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> that represents the work queued to execute.</returns>
+        /// <seealso cref="BotStateSet"/>
+        /// <seealso cref="ConversationState"/>
+        /// <seealso cref="IMiddleware"/>
+        public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (turnContext.Activity.Type is "message")
+            {
+                var utterance = turnContext.Activity.Text;
+                var state = await _accessors.PictureState.GetAsync(turnContext, () => new PictureState());
+                state.UtteranceList.Add(utterance);
+                await _accessors.ConversationState.SaveChangesAsync(turnContext);
+
+                // Establish dialog context from the conversation state.
+                var dc = await _dialogs.CreateContextAsync(turnContext);
+                // Continue any current dialog.
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+
+                // Every turn sends a response, so if no response was sent,
+                // then there no dialog is currently active.
+                if (!turnContext.Responded)
+                {
+                    // Start the main dialog
+                    await dc.BeginDialogAsync("mainDialog", null, cancellationToken);
+                }
+            }
+        }
+
+        public PictureBot(PictureBotAccessors accessors, ILoggerFactory loggerFactory,  LuisRecognizer recognizer)
+        {
+            if (loggerFactory == null)
+            {
+                throw new System.ArgumentNullException(nameof(loggerFactory));
+            }
+
+            // Add instance of LUIS Recognizer
             _recognizer = recognizer ?? throw new ArgumentNullException(nameof(recognizer));
 
+            _logger = loggerFactory.CreateLogger<PictureBot>();
+            _logger.LogTrace("PictureBot turn start.");
             _accessors = accessors ?? throw new System.ArgumentNullException(nameof(accessors));
 
             // The DialogSet needs a DialogState accessor, it will call it when it has a turn context.
@@ -57,43 +109,14 @@ namespace PictureBot.Bots
             _dialogs.Add(new TextPrompt("searchPrompt"));
         }
 
+        // Add MainDialog-related tasks
 
-        public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (turnContext.Activity.Type is "message")
-            {
-                var utterance = turnContext.Activity.Text;
-                var state = await _accessors.PictureState.GetAsync(turnContext, () => new PictureState());
-                state.UtteranceList.Add(utterance);
-                await _accessors.ConversationState.SaveChangesAsync(turnContext);
+        // Add SearchDialog-related tasks
 
-                // Establish dialog context from the conversation state.
-                var dc = await _dialogs.CreateContextAsync(turnContext);
-                // Continue any current dialog.
-                var results = await dc.ContinueDialogAsync(cancellationToken);
+        // Add search related tasks
 
-                // Every turn sends a response, so if no response was sent,
-                // then there no dialog is currently active.
-                if (!turnContext.Responded)
-                {
-                    // Start the main dialog
-                    await dc.BeginDialogAsync("mainDialog", null, cancellationToken);
-                }
-            }
-        }
-
-        protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
-        {
-            var welcomeText = "Hello and welcome!";
-            foreach (var member in membersAdded)
-            {
-                if (member.Id != turnContext.Activity.Recipient.Id)
-                {
-                    await turnContext.SendActivityAsync(MessageFactory.Text(welcomeText, welcomeText), cancellationToken);
-                }
-            }
-        }
-
+        // If we haven't greeted a user yet, we want to do that first, but for the rest of the
+        // conversation we want to remember that we've already greeted them.
         private async Task<DialogTurnResult> GreetingAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // Get the state for the current step in the conversation
@@ -102,7 +125,6 @@ namespace PictureBot.Bots
             // If we haven't greeted the user
             if (state.Greeted == "not greeted")
             {
-
                 // Greet the user
                 await MainResponses.ReplyWithGreeting(stepContext.Context);
                 // Update the GreetedState to greeted
@@ -138,6 +160,9 @@ namespace PictureBot.Bots
             // Based on the recognized intent, direct the conversation
             switch (recognizedIntents.TopIntent?.Name)
             {
+                case "search":
+                    // switch to the search dialog
+                    return await stepContext.BeginDialogAsync("searchDialog", null, cancellationToken);
                 case "share":
                     // respond that you're sharing the photo
                     await MainResponses.ReplyWithShareConfirmation(stepContext.Context);
@@ -181,10 +206,6 @@ namespace PictureBot.Bots
                                 await MainResponses.ReplyWithShareConfirmation(stepContext.Context);
                                 await MainResponses.ReplyWithLuisScore(stepContext.Context, topIntent.Value.intent, topIntent.Value.score);
                                 break;
-                            case "SearchPic":
-                                await MainResponses.ReplyWithSearchConfirmation(stepContext.Context);
-                                await MainResponses.ReplyWithLuisScore(stepContext.Context, topIntent.Value.intent, topIntent.Value.score);
-                                break;
                             default:
                                 await MainResponses.ReplyWithConfused(stepContext.Context);
                                 break;
@@ -192,7 +213,7 @@ namespace PictureBot.Bots
                         return await stepContext.EndDialogAsync();
                     }
             }
-
         }
+        
     }
 }

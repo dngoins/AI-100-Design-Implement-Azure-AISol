@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Collections.Generic;
 
 namespace Microsoft.PictureBot
 {
@@ -14,9 +17,8 @@ namespace Microsoft.PictureBot
         /// </summary>
         /// <value>The number of turns in the conversation.</value>
         public string Greeted { get; set; } = "not greeted";
+        public List<string> UtteranceList { get; private set; } = new List<string>();
         public string Search { get; set; } = "";
         public string Searching { get; set; } = "no";
-
-        public List<string> UtteranceList { get; private set; } = new List<string>();
     }
 }

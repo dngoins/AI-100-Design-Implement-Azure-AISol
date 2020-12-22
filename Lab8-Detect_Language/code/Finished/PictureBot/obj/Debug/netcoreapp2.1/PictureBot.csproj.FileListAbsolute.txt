@@ -1,0 +1,6 @@
+C:\Users\jmfqynl\source\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab8-Detect_Language\code\Finished\PictureBot\obj\Debug\netcoreapp2.1\PictureBot.csprojAssemblyReference.cache
+C:\Users\jmfqynl\source\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab8-Detect_Language\code\Finished\PictureBot\obj\Debug\netcoreapp2.1\PictureBot.AssemblyInfoInputs.cache
+C:\Users\jmfqynl\source\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab8-Detect_Language\code\Finished\PictureBot\obj\Debug\netcoreapp2.1\PictureBot.AssemblyInfo.cs
+C:\Users\jmfqynl\source\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab8-Detect_Language\code\Finished\PictureBot\obj\Debug\netcoreapp2.1\PictureBot.csproj.CoreCompileInputs.cache
+C:\Users\jmfqynl\source\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab8-Detect_Language\code\Finished\PictureBot\obj\Debug\netcoreapp2.1\PictureBot.RazorAssemblyInfo.cache
+C:\Users\jmfqynl\source\github\dngoins\AI-100-Design-Implement-Azure-AISol\Lab8-Detect_Language\code\Finished\PictureBot\obj\Debug\netcoreapp2.1\PictureBot.RazorAssemblyInfo.cs

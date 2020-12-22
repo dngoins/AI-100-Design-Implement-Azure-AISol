@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 
 namespace Microsoft.PictureBot
@@ -67,7 +66,8 @@ namespace Microsoft.PictureBot
                 throw new ArgumentException($"RegExpRecognizerMiddleware: a minScore of {_settings.MinScore} is out of range.");
             }
 
-            this.OnRecognize( (context) =>{
+            this.OnRecognize(async (context) =>
+           {
                IList<Intent> intents = new List<Intent>();
                string utterance = CleanString(context.Activity.Text);
                double minScore = _settings.MinScore;
@@ -100,7 +100,7 @@ namespace Microsoft.PictureBot
                        }
                    }
                }
-                return Task.FromResult(intents);
+               return intents;
            });
         }
 

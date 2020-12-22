@@ -1,39 +1,38 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 //
-// Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.10.3
+// Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.5.0
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-
-using PictureBot.Bots;
 
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.Bot.Builder.AI.Luis;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
-
-using Microsoft.Bot.Builder.AI.Luis;
-using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.PictureBot;
-using Microsoft.Bot.Builder.Azure.Blobs;
-using Azure.AI.TextAnalytics;
-using Azure;
+
+using Microsoft.Azure.CognitiveServices.Language.TextAnalytics;
+using Microsoft.Azure.CognitiveServices.Language.TextAnalytics.Models;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
 
 namespace PictureBot
 {
     public class Startup
     {
         private ILoggerFactory _loggerFactory;
+        private bool _isProduction = false;
 
         public Startup(IConfiguration configuration)
         {
@@ -45,12 +44,11 @@ namespace PictureBot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers().AddNewtonsoftJson();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
-            // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddBot<PictureBot.Bots.PictureBot>(options =>
             {
                 var appId = Configuration.GetSection("MicrosoftAppId")?.Value;
@@ -70,7 +68,9 @@ namespace PictureBot
 
                 // The Memory Storage used here is for local bot debugging only. When the bot
                 // is restarted, everything stored in memory will be gone.
-                IStorage dataStore = new MemoryStorage();
+                var blobConnectionString = Configuration.GetSection("BlobStorageConnectionString")?.Value;
+                var blobContainer = Configuration.GetSection("BlobStorageContainer")?.Value;
+                IStorage dataStore = new Microsoft.Bot.Builder.Azure.AzureBlobStorage(blobConnectionString, blobContainer);
 
                 // For production bots use the Azure Blob or
                 // Azure CosmosDB storage providers. For the Azure
@@ -102,6 +102,9 @@ namespace PictureBot
                 services.AddSingleton<ConversationState>(conversationState);
 
                 var middleware = options.Middleware;
+
+                // Add middleware below with "middleware.Add(...."
+                // Add Regex below
                 middleware.Add(new RegExpRecognizerMiddleware()
                 .AddIntent("search", new Regex("search picture(?:s)*(.*)|search pic(?:s)*(.*)", RegexOptions.IgnoreCase))
                 .AddIntent("share", new Regex("share picture(?:s)*(.*)|share pic(?:s)*(.*)", RegexOptions.IgnoreCase))
@@ -113,15 +116,13 @@ namespace PictureBot
             // Acessors created here are passed into the IBot-derived class on every turn.
             services.AddSingleton<PictureBotAccessors>(sp =>
             {
-
                 var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
                 if (options == null)
                 {
                     throw new InvalidOperationException("BotFrameworkOptions must be configured prior to setting up the state accessors");
                 }
 
-                var conversationState = sp.GetRequiredService<ConversationState>();
-                //var conversationState = services.BuildServiceProvider().GetService<ConversationState>();
+                var conversationState = services.BuildServiceProvider().GetService<ConversationState>();
 
                 if (conversationState == null)
                 {
@@ -130,68 +131,53 @@ namespace PictureBot
 
                 // Create the custom state accessor.
                 // State accessors enable other components to read and write individual properties of state.
-                return new PictureBotAccessors(conversationState)
+                var accessors = new PictureBotAccessors(conversationState)
                 {
                     PictureState = conversationState.CreateProperty<PictureState>(PictureBotAccessors.PictureStateName),
                     DialogStateAccessor = conversationState.CreateProperty<DialogState>("DialogState"),
                 };
+
+                return accessors;
             });
 
 
             // Create and register a LUIS recognizer.
             services.AddSingleton(sp =>
             {
-                var luisApplication = new LuisApplication(
-                  Configuration.GetSection("luisAppId")?.Value,
-                  Configuration.GetSection("luisAppKey")?.Value,
-                  Configuration.GetSection("luisEndPoint")?.Value);
-                // Set the recognizer options depending on which endpoint version you want to use.
-                // More details can be found in https://docs.microsoft.com/en-gb/azure/cognitive-services/luis/luis-migration-api-v3
-                var recognizerOptions = new LuisRecognizerOptionsV3(luisApplication)
+                var luisAppId = Configuration.GetSection("luisAppId")?.Value;
+                var luisAppKey = Configuration.GetSection("luisAppKey")?.Value;
+                var luisEndPoint = Configuration.GetSection("luisEndPoint")?.Value;
+
+                // Get LUIS information
+                var luisApp = new LuisApplication(luisAppId, luisAppKey, luisEndPoint);
+
+                // Specify LUIS options. These may vary for your bot.
+                var luisPredictionOptions = new LuisPredictionOptions
                 {
-                    PredictionOptions = new Microsoft.Bot.Builder.AI.LuisV3.LuisPredictionOptions
-                    {
-                        IncludeAllIntents = true,
-                    }
+                    IncludeAllIntents = true,
                 };
-                return new LuisRecognizer(recognizerOptions);
+
+                // Create the recognizer
+                var recognizer = new LuisRecognizer(luisApp, luisPredictionOptions, true, null);
+                return recognizer;
             });
 
-            // Create the User state.
-            services.AddSingleton<UserState>(sp =>
+            services.AddSingleton(sp =>
             {
-                var dataStore = sp.GetRequiredService<IStorage>();
-                return new UserState(dataStore);
-            });
-
-            // Create the Conversation state.
-            services.AddSingleton<ConversationState>(sp =>
-            {
-                var dataStore = sp.GetRequiredService<IStorage>();
-                return new ConversationState(dataStore);
-            });
-
-            // Create the IStorage.
-            services.AddSingleton<IStorage, BlobsStorage>(sp =>
-            {
-                var blobConnectionString = Configuration.GetSection("BlobStorageConnectionString")?.Value;
-                var blobContainer = Configuration.GetSection("BlobStorageContainer")?.Value;
-                BlobsStorage dataStore = new BlobsStorage(blobConnectionString, blobContainer);
-                return dataStore;
-            });
-
-            services.AddSingleton<TextAnalyticsClient>(sp =>
-            {
-                Uri cogsBaseUrl = new Uri(Configuration.GetSection("cogsBaseUrl")?.Value);
+                string cogsBaseUrl = Configuration.GetSection("cogsBaseUrl")?.Value;
                 string cogsKey = Configuration.GetSection("cogsKey")?.Value;
 
-                var credentials = new AzureKeyCredential(cogsKey);
-                return new TextAnalyticsClient(cogsBaseUrl, credentials);
+                var credentials = new ApiKeyServiceClientCredentials(cogsKey);
+                TextAnalyticsClient client = new TextAnalyticsClient(credentials)
+                {
+                    Endpoint = cogsBaseUrl
+                };
+
+                return client;
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             _loggerFactory = loggerFactory;
 

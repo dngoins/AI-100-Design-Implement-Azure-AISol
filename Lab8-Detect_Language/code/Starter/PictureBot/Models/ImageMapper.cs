@@ -1,7 +1,8 @@
-﻿
+﻿using Microsoft.Azure.Search.Models;
+
 namespace PictureBot.Models
 {
-    public class ImageMapper
+    public class ImageMapper 
     {
         public static SearchHit ToSearchHit(dynamic hit)
         {
