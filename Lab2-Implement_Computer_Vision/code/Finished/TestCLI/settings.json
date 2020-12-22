@@ -1,15 +1,15 @@
 {
   "CognitiveServicesKeys": {
-    "Url": "https://dngcogsvcs.cognitiveservices.azure.com/vision/v1.0",
-    "Vision": "0967dfe6f4384b03bb7b4c4302460dd4"
+    "Url": "https://ai100.cognitiveservices.azure.com/vision/v1.0",
+    "Vision": ""
   },
   "AzureStorage": {
-    "ConnectionString": "DefaultEndpointsProtocol=https;AccountName=dngai100picbotstorage;AccountKey=mbh0MHg8rWm6g4Rwnf+QyjqGJdETewpHr5yqEn/3phDGXdh5mTnwXL4CDafaEjuheIo/4XMw3P4hsP2+lCZADw==;EndpointSuffix=core.windows.net",
+    "ConnectionString": "DefaultEndpointsProtocol=https;AccountName=ai100storageg;AccountKey=;EndpointSuffix=core.windows.net",
     "BlobContainer": "images"
   },
   "CosmosDB": {
-    "EndpointURI": "https://dng-ai-100-05-26-202011.documents.azure.com:443/",
-    "Key": "j2m5QvXBWstpUVGn1wEr4R4c0kxfKkULZTlkd2ovBLdu8lrj4DPAtisqjzx6FKgWyn3wRfHe3VEyKfJauG21vg==",
+    "EndpointURI": "https://ai100.documents.azure.com:443/",
+    "Key": "",
     "DatabaseName": "images",
     "CollectionName": "metadata"
   }
