@@ -39,7 +39,7 @@
             "type": "endpoint",
             "appId": "747c9027-b01e-42da-ba68-75ea455b3650",
             "appPassword": "z}p{IhYAI-Gci8HqIYNv;8Gh3b[M1Ea",
-            "endpoint": "http://localhost:3978/api/messages",
+            "endpoint": "http://localhost:3971/api/messages",
             "id": "20",
             "name": "echo bot with QNA"
         },
@@ -47,10 +47,24 @@
             "type": "qna",
             "endpointKey": "af3ffaf4763e40da9bf1975ac539087c",
             "hostname": "https://qnaai10012212020.cognitiveservices.azure.com/qnamaker",
+            "id": "21",
             "kbId": "611b8e08-151c-4129-9586-92208ce4316f",
             "name": "BikeRepairsKB",
-            "subscriptionKey": "65d5916d-bbcb-4efc-bb66-6b62fafe36e0",
-            "id": "21"
+            "subscriptionKey": "65d5916d-bbcb-4efc-bb66-6b62fafe36e0"
+        },
+        {
+            "type": "endpoint",
+            "appId": "747c9027-b01e-42da-ba68-75ea455b3650",
+            "appPassword": "z}p{IhYAI-Gci8HqIYNv;8Gh3b[M1Ea",
+            "endpoint": "http://demobot12222020.azurewebsites.net/api/messages",
+            "id": "242",
+            "name": "QNA Azure Bot"
+        },
+        {
+            "type": "endpoint",
+            "endpoint": "http://localhost:3978/api/messages",
+            "name": "PicutreBot",
+            "id": "192"
         }
     ],
     "padlock": "",
